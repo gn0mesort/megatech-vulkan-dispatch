@@ -28,8 +28,12 @@ template_arguments = [ ]
 if get_option('extra_defines').allowed()
   template_arguments = [ '--template-arguments=@generate-defines' ]
 endif
+specification = get_option('specification')
 generator = [ find_program('tools/dispatch-table-generator'), '-o@OUTPUT@', '--api=@0@'.format(get_option('api')),
               '--api-version=@0@'.format(get_option('api_version')), '--extensions=@0@'.format(extensions) ]
+if specification != ''
+  generator += '--specification=@0@'.format(specification)
+endif
 subdir('generated/include')
 sources = [ ]
 subdir('generated/src')
