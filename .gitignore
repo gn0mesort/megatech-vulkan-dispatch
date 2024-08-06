@@ -31,6 +31,9 @@
 *.out
 *.app
 
+# Clangd
+.cache
+
 # Python
 .venv/
 __pycache__
