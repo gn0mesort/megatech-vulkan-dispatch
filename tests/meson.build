@@ -4,6 +4,8 @@ test_deps = [
   megatech_vulkan_dispatch_dep
 ]
 
-test('Global Dispatch', executable('test-global-dispatch', 'global_dispatch.cpp', dependencies: test_deps))
-test('Instance Dispatch', executable('test-instance-dispatch', 'instance_dispatch.cpp', dependencies: test_deps))
-test('Device Dispatch', executable('test-device-dispatch', 'device_dispatch.cpp', dependencies: test_deps))
+if get_option('tests').allowed()
+  test('Global Dispatch', executable('test-global-dispatch', 'global_dispatch.cpp', dependencies: test_deps))
+  test('Instance Dispatch', executable('test-instance-dispatch', 'instance_dispatch.cpp', dependencies: test_deps))
+  test('Device Dispatch', executable('test-device-dispatch', 'device_dispatch.cpp', dependencies: test_deps))
+endif

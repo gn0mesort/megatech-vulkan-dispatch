@@ -21,9 +21,15 @@ import megatech.vulkan.applications
 if has_tools.returncode() != 0
   error('Please ensure that all Python requirements are installed.')
 endif
-generator = find_program('tools/dispatch-table-generator')
 includes = include_directories('include')
 headers = [ ]
+extensions = ','.join(get_option('extensions'))
+template_arguments = [ ]
+if get_option('extra_defines').allowed()
+  template_arguments = [ '--template-arguments=@generate-defines' ]
+endif
+generator = [ find_program('tools/dispatch-table-generator'), '-o@OUTPUT@', '--api=@0@'.format(get_option('api')),
+              '--api-version=@0@'.format(get_option('api_version')), '--extensions=@0@'.format(extensions) ]
 subdir('generated/include')
 sources = [ ]
 subdir('generated/src')
