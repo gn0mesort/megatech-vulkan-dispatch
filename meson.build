@@ -34,6 +34,9 @@ generator = [ find_program('tools/dispatch-table-generator'), '-o@OUTPUT@', '--a
 if specification != ''
   generator += '--specification=@0@'.format(specification)
 endif
+if not get_option('deprecated_vulkan_features').allowed()
+  generator += '--no-enable-deprecated'
+endif
 subdir('generated/include')
 sources = [ ]
 subdir('generated/src')

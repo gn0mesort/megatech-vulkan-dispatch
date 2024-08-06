@@ -17,3 +17,6 @@ option('extensions', type: 'array', value: [ 'all' ],
 option('extra_defines', type: 'feature', value: 'disabled',
        description: 'Generate extra definitions like MEGATECH_VULKAN_DISPATCH_KHR_SURFACE_ENABLED in "defs.hpp". ' +
                     'These values are always defined to 1. This is disabled by default to save space.')
+option('deprecated_vulkan_features', type: 'feature', value: 'enabled',
+       description: 'Generate command names for deprecated Vulkan commands. Run "tools/dispatch-table-generator -h" ' +
+                    'for more information. Enabled by default.')
