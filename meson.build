@@ -56,6 +56,7 @@ doc_env.set('DOXYGEN_PROJECT_NUMBER', meson.project_version())
 doc_env.set('DOXYGEN_OUTPUT_DIRECTORY', meson.current_build_dir() / 'documentation')
 doc_inputs = [ meson.current_source_dir() / 'include', meson.current_source_dir() / 'generated',
                files('README.md')[0].full_path() ]
+doc_env.set('DOXYGEN_USE_MDFILE_AS_MAINPAGE', doc_inputs[2])
 foreach header : headers
   doc_inputs += [ header.full_path() ]
 endforeach
