@@ -40,21 +40,6 @@ try:
  * @brief The time at which this file was generated in the format HHMMSS.
  */
 #define MEGATECH_VULKAN_DISPATCH_BUILD_TIME (${f"{buildtime.hour}{buildtime.minute:02}{buildtime.second:02}"}ULL)
-/**
- * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND
- * @brief The total number of global commands emitted during generation.
- */
-#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND (${len(commands.global_commands())})
-/**
- * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND
- * @brief The total number of instance commands emitted during generation.
- */
-#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND (${len(commands.instance_commands())})
-/**
- * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND
- * @brief The total number of device commands emitted during generation.
- */
-#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND (${len(commands.device_commands())})
 % if args.generate_defines:
 % for name in specification.apis():
 <% api = specification.apis()[name] %>\

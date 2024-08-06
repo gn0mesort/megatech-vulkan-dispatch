@@ -85,7 +85,7 @@ namespace global {
 
   class table final {
   private:
-    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND> m_pfns{ };
+    std::array<PFN_vkVoidFunction, ${len(commands.global_commands())}> m_pfns{ };
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
@@ -166,7 +166,7 @@ namespace instance {
   class table final {
   private:
     VkInstance m_instance{ };
-    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND> m_pfns{ };
+    std::array<PFN_vkVoidFunction, ${len(commands.instance_commands())}> m_pfns{ };
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
@@ -250,7 +250,7 @@ namespace device {
   class table final {
   private:
     VkDevice m_device{ };
-    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND> m_pfns{ };
+    std::array<PFN_vkVoidFunction, ${len(commands.device_commands())}> m_pfns{ };
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
