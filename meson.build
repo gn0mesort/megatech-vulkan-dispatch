@@ -59,5 +59,6 @@ doc_env.set('DOXYGEN_INPUT', ' '.join(doc_inputs))
 doc_strips = [ meson.current_build_dir() / 'generated/include', meson.current_build_dir() / 'generated/src',
                meson.current_source_dir() / 'include' ]
 doc_env.set('DOXYGEN_STRIP_FROM_PATH', ' '.join(doc_strips))
+doc_env.set('DOXYGEN_HTML_EXTRA_STYLESHEET', files('documentation/extra.css')[0].full_path())
 custom_target('documentation', output: 'documentation', build_always_stale: true,
               command: [ doxygen, files('Doxyfile') ], env: doc_env, depends: headers)
