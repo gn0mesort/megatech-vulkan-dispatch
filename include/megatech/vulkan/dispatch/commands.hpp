@@ -1,6 +1,7 @@
 /**
  * @file commands.hpp
  * @brief Vulkan Command Enumerations
+ * @author Alexander Rothman <gnomesort@megate.ch>
  * @date 2024
  * @copyright AGPL-3.0-or-later
  */
