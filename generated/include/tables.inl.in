@@ -23,7 +23,7 @@ try:
  * @file tables.inl
  * @brief Vulkan Dispatch Tables
  * @author Generated
- * @date 2024
+ * @date ${f"{buildtime:%B} {buildtime.day:02}, {buildtime.year}"}
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_TABLES_INL
 #define MEGATECH_VULKAN_DISPATCH_TABLES_INL
@@ -44,17 +44,17 @@ namespace megatech::vulkan::dispatch {
     std::string m_what{ };
   public:
     /**
-     * @brief Construct a error.
+     * @brief Construct an error.
      * @param what An error message.
      */
     explicit error(const std::string& what);
     /**
-     * @brief Copy a error.
+     * @brief Copy an error.
      * @param other The error to copy.
      */
     error(const error& other) = default;
     /**
-     * @brief Move a error.
+     * @brief Move an error.
      * @param other The error to move.
      */
     error(error&& other) = default;
@@ -63,13 +63,13 @@ namespace megatech::vulkan::dispatch {
      */
     ~error() noexcept = default;
     /**
-     * @brief Copy-assign a error.
+     * @brief Copy-assign an error.
      * @param rhs The error to copy.
      * @return A reference to the copied-to error.
      */
     error& operator=(const error& rhs) = default;
     /**
-     * @brief Move-assign a error.
+     * @brief Move-assign an error.
      * @param rhs The error to move.
      * @return A reference to the moved-to error.
      */
@@ -83,12 +83,17 @@ namespace megatech::vulkan::dispatch {
 
 namespace global {
 
+  /**
+   * @brief A dispatch table class for global Vulkan commands.
+   */
   class table final {
   private:
     std::array<PFN_vkVoidFunction, ${len(commands.global_commands())}> m_pfns{ };
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @details In general, this **SHOULD** be less than or equal to the patch version of the value returned by
+     *          `vkEnumerateInstanceVersion()`.
      * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
      */
     static constexpr std::uint32_t specification_version() {
@@ -96,8 +101,11 @@ namespace global {
     }
     /**
      * @brief Construct a table.
-     * @param global A global loader function that behaves like the standard vkGetInstanceProcAddr() function.
-     * @throw error If the value of global is nullptr.
+     * @param global A global loader function that behaves like the standard `vkGetInstanceProcAddr()` function.
+     *               Crucially, it is not necessary that this actually is the same `vkGetInstanceProcAddr()` function
+     *               that is defined by `libvulkan`. It only needs to behave correctly. Acquiring a working function
+     *               pointer is the responsibility of the client.
+     * @throw dispatch::error If the value of global is nullptr.
      */
     explicit table(const PFN_vkGetInstanceProcAddr global);
     /**
@@ -129,27 +137,38 @@ namespace global {
       return m_pfns.size();
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
-     *          Although it's possible for vkGetInstanceProcAddr to resolve itself, the value returned by the
-     *          global_command::vkGetInstanceProcAddr input will always be the loader function used to construct the
+     * @brief Retrieve a pointer to a function pointer in the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
+     *          responsible for ensuring that the retrieved pointer is not null and for reinterpreting it to the
+     *          correct type. A pointer can be safely reinterpreted as follows:
+     *
+     *          @code{.cpp}
+     *          // Table Initialization
+     *          // Retrieve "vkGetInstanceProcAddr" elsewhere.
+     *          auto gdt = table{ vkGetInstanceProcAddr };
+     *          constexpr auto cmd = command::vkEnumerateInstanceVersion;
+     *          // Load
+     *          auto vkEnumerateInstanceVersion = *reinterpret_cast<const PFN_vkEnumerateInstanceVersion*>(gdt(cmd));
+     *          if (!vkEnumerateInstanceVersion)
+     *          {
+     *            // ERROR!
+     *          }
+     *          // It's safe to call "vkEnumerateInstanceVersion".
+     *          @endcode
+     *
+     *          Although it's possible for `vkGetInstanceProcAddr()` to resolve itself, the value returned by the
+     *          `command::vkGetInstanceProcAddr` input will always be the loader function used to construct the
      *          table.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* get(const command cmd) const noexcept {
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
-     *          Although it's possible for vkGetInstanceProcAddr to resolve itself, the value returned by the
-     *          global_command::vkGetInstanceProcAddr input will always be the loader function used to construct the
-     *          table.
+     * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);
@@ -170,6 +189,8 @@ namespace instance {
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @details In general, this **SHOULD** be less than or equal to the patch version of the value returned by
+     *          `vkEnumerateInstanceVersion()`.
      * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
      */
     static constexpr std::uint32_t specification_version() {
@@ -180,9 +201,9 @@ namespace instance {
      * @details table objects do not have an ownership relationship with their parent
      *          table. The lifetime of the global table may end immediately after construction.
      * @param global A reference to a global::table.
-     * @param instance A valid VkInstance handle. The table shares ownership of the VkInstance, and
+     * @param instance A valid @ref VkInstance handle. The table shares ownership of the @ref VkInstance, and
      *                 so it must remain valid for the table's entire lifetime.
-     * @throw error If the value of instance is VK_NULL_HANDLE (a/k/a nullptr).
+     * @throw dispatch::error If the value of instance is VK_NULL_HANDLE (a/k/a nullptr).
      */
     table(megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
     /**
@@ -207,8 +228,8 @@ namespace instance {
     table& operator=(table&& rhs) = delete;
     /// @endcond
     /**
-     * @brief Retrieve the VkInstance used to construct the table.
-     * @return The VkInstance handle that was used to construct the table.
+     * @brief Retrieve the @ref VkInstance used to construct the table.
+     * @return The @ref VkInstance handle that was used to construct the table.
      */
     VkInstance instance() const;
     /**
@@ -219,21 +240,20 @@ namespace instance {
       return m_pfns.size();
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
+     * @brief Retrieve a pointer to a function pointer in the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
+     *          responsible for ensuring that the retrieved pointer is not null and for reinterpreting it to the
+     *          correct type.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* get(const command cmd) const noexcept {
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
+     * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);
@@ -254,6 +274,8 @@ namespace device {
   public:
     /**
      * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @details In general, this **SHOULD** be less than or equal to the patch version of the value returned by
+     *          `vkEnumerateInstanceVersion()`.
      * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
      */
     static constexpr std::uint32_t specification_version() {
@@ -265,9 +287,9 @@ namespace device {
      *          lifetime of the parent tables may end immediately after construction.
      * @param global A reference to a global::table.
      * @param instance A reference to an instance::table.
-     * @param device A valid VkDevice handle. The table shares ownership of the VkDevice, and
+     * @param device A valid @ref VkDevice handle. The table shares ownership of the @ref VkDevice, and
      *                 so it must remain valid for the table's entire lifetime.
-     * @throw error If the value of device is VK_NULL_HANDLE (a/k/a nullptr).
+     * @throw dispatch::error If the value of device is VK_NULL_HANDLE (a/k/a nullptr).
      */
     table(megatech::vulkan::dispatch::global::table& global, megatech::vulkan::dispatch::instance::table& instance,
           const VkDevice device);
@@ -293,8 +315,8 @@ namespace device {
     table& operator=(table&& rhs) = delete;
     /// @endcond
     /**
-     * @brief Retrieve the VkDevice used to construct the table.
-     * @return The VkDevice handle that was used to construct the table.
+     * @brief Retrieve the @ref VkDevice used to construct the table.
+     * @return The @ref VkDevice handle that was used to construct the table.
      */
     VkDevice device() const;
     /**
@@ -305,21 +327,20 @@ namespace device {
       return m_pfns.size();
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
+     * @brief Retrieve a pointer to a function pointer in the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
+     *          responsible for ensuring that the retrieved pointer is not null and for reinterpreting it to the
+     *          correct type.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* get(const command cmd) const noexcept {
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
-     * @brief Retrieve a function pointer from the table.
-     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
-     *          responsibility of other modules (or clients).
+     * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The command to resolve.
-     * @return A function pointer or nullptr if the command wasn't available.
+     * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
      */
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);

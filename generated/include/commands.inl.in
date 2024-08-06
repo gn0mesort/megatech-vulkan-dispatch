@@ -23,7 +23,7 @@ try:
  * @file commands.inl
  * @brief Vulkan Commands
  * @author Generated
- * @date 2024
+ * @date ${f"{buildtime:%B} {buildtime.day:02}, {buildtime.year}"}
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
 #define MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
