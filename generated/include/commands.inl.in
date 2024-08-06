@@ -33,6 +33,9 @@ namespace megatech::vulkan::dispatch {
 
 namespace global {
 
+  /**
+   * @brief An enumeration of globally available Vulkan command names.
+   */
   enum class command : std::size_t {
 % for cmd in sorted(commands.global_commands()):
     ${cmd.name()},
@@ -43,6 +46,9 @@ namespace global {
 
 namespace instance {
 
+  /**
+   * @brief An enumeration of instance-level Vulkan command names.
+   */
   enum class command : std::size_t {
 % for cmd in sorted(commands.instance_commands()):
     ${cmd.name()},
@@ -53,6 +59,9 @@ namespace instance {
 
 namespace device {
 
+  /**
+   * @brief An enumeration of device-level Vulkan command names.
+   */
   enum class command : std::size_t {
 % for cmd in sorted(commands.device_commands()):
     ${cmd.name()},
