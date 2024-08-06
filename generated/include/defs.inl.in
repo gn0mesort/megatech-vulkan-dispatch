@@ -24,7 +24,7 @@ try:
 %>\
 /**
  * @file defs.inl
- * @brief Vulkan Dispatch Definitions
+ * @brief Vulkan Dispatch Definitions Inline File
  * @author Generated
  * @date ${f"{buildtime:%B} {buildtime.day:02}, {buildtime.year}"}
  */

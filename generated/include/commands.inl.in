@@ -21,7 +21,7 @@ try:
 %>\
 /**
  * @file commands.inl
- * @brief Vulkan Commands
+ * @brief Vulkan Commands Inline File
  * @author Generated
  * @date ${f"{buildtime:%B} {buildtime.day:02}, {buildtime.year}"}
  */

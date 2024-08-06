@@ -1,3 +1,9 @@
+/**
+ * @file dispatch.hpp
+ * @brief Dispatch Functionality
+ * @date 2024
+ * @copyright AGPL-3.0-or-later
+ */
 #ifndef MEGATECH_VULKAN_DISPATCH_HPP
 #define MEGATECH_VULKAN_DISPATCH_HPP
 
