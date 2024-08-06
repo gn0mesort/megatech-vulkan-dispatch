@@ -70,10 +70,10 @@ try:
 <% extension = specification.extensions()[name] %>\
 % if extension.enabled():
 /**
- * @def MEGATECH_VULKAN_${extension.name().replace("VK_", "").upper()}_ENABLED
+ * @def MEGATECH_VULKAN_DISPATCH_${extension.name().replace("VK_", "").upper()}_ENABLED
  * @brief Indicates that "${extension.name()}" was enabled during generation.
  */
-#define MEGATECH_VULKAN_${extension.name().replace("VK_", "").upper()}_ENABLED (1)
+#define MEGATECH_VULKAN_DISPATCH_${extension.name().replace("VK_", "").upper()}_ENABLED (1)
 % endif
 % endfor
 % endif
