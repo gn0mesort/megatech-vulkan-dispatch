@@ -9,8 +9,10 @@ TEST_CASE("Device dispatch tables should resolve function pointers.", "[dispatch
   auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt, device };
   REQUIRE(device == ddt.device());
   DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
+#ifdef MEGATECH_VULKAN_DISPATCH_KHR_SWAPCHAIN_ENABLED
   DECLARE_DEVICE_PFN_UNCHECKED(ddt, vkCreateSwapchainKHR);
   REQUIRE(vkCreateSwapchainKHR == nullptr);
+#endif
   vkDestroyDevice(device, nullptr);
 }
 

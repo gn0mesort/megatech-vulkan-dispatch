@@ -7,8 +7,10 @@ TEST_CASE("Instance dispatch tables should resolve function pointers.", "[dispat
   auto idt = megatech::vulkan::dispatch::instance::table{ gdt, instance };
   REQUIRE(instance == idt.instance());
   DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+#ifdef MEGATECH_VULKAN_DISPATCH_EXT_DEBUG_UTILS_ENABLED
   DECLARE_INSTANCE_PFN_UNCHECKED(idt, vkCreateDebugUtilsMessengerEXT);
   REQUIRE(vkCreateDebugUtilsMessengerEXT == nullptr);
+#endif
   vkDestroyInstance(instance, nullptr);
 }
 
