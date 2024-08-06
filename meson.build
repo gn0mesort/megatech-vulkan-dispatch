@@ -46,3 +46,18 @@ subdir('tests')
 if get_option('tests').allowed()
   test('Dispatch Table Generator', find_program(files('tools/tests/test-dispatch-table-generator')))
 endif
+doxygen = find_program('doxygen')
+doc_env = environment()
+doc_env.set('DOXYGEN_PROJECT_NAME', meson.project_name())
+doc_env.set('DOXYGEN_PROJECT_NUMBER', meson.project_version())
+doc_env.set('DOXYGEN_OUTPUT_DIRECTORY', meson.current_build_dir() / 'documentation')
+doc_inputs = [ meson.current_source_dir() / 'include', meson.current_source_dir() / 'generated' ]
+foreach header : headers
+  doc_inputs += [ header.full_path() ]
+endforeach
+doc_env.set('DOXYGEN_INPUT', ' '.join(doc_inputs))
+doc_strips = [ meson.current_build_dir() / 'generated/include', meson.current_build_dir() / 'generated/src',
+               meson.current_source_dir() / 'include' ]
+doc_env.set('DOXYGEN_STRIP_FROM_PATH', ' '.join(doc_strips))
+custom_target('documentation', output: 'documentation', build_always_stale: true,
+              command: [ doxygen, files('Doxyfile') ], env: doc_env, depends: headers)
