@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Python
+.venv/
+__pycache__
+*.egg-info
+.coverage
