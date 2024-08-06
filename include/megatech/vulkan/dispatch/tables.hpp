@@ -1,0 +1,6 @@
+#ifndef MEGATECH_VULKAN_DISPATCH_TABLES_HPP
+#define MEGATECH_VULKAN_DISPATCH_TABLES_HPP
+
+#include "tables.inl"
+
+#endif

@@ -1,0 +1,333 @@
+##
+## @file tables.inl.in
+## @brief Vulkan Dispatch Tables Template
+## @author Alexander Rothman <gnomesort@megate.ch>
+## @date 2024
+## @copyright AGPL-3.0-or-later
+## @cond
+<%!
+  import sys
+  from argparse import ArgumentParser
+%>\
+<%
+  parser = ArgumentParser(prog="defs.inl.in", add_help=False, exit_on_error=False, prefix_chars="@")
+  parser.add_argument("@help", "@h", action="help", help="Display this help message and exit.")
+try:
+    args = parser.parse_args(arguments)
+  except Exception as err:
+    print(err, file=sys.stderr)
+    parser.print_help(file=sys.stderr)
+    return STOP_RENDERING
+%>\
+/**
+ * @file tables.inl
+ * @brief Vulkan Dispatch Tables
+ * @author Generated
+ * @date 2024
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_TABLES_INL
+#define MEGATECH_VULKAN_DISPATCH_TABLES_INL
+#include <cinttypes>
+
+#include <string>
+#include <array>
+
+#include "defs.inl"
+#include "commands.inl"
+
+namespace megatech::vulkan::dispatch {
+  /**
+   * @brief A class representing errors generated during dispatch table construction.
+   */
+  class error final : public std::exception {
+  private:
+    std::string m_what{ };
+  public:
+    /**
+     * @brief Construct a error.
+     * @param what An error message.
+     */
+    explicit error(const std::string& what);
+    /**
+     * @brief Copy a error.
+     * @param other The error to copy.
+     */
+    error(const error& other) = default;
+    /**
+     * @brief Move a error.
+     * @param other The error to move.
+     */
+    error(error&& other) = default;
+    /**
+     * @brief Destroy a error.
+     */
+    ~error() noexcept = default;
+    /**
+     * @brief Copy-assign a error.
+     * @param rhs The error to copy.
+     * @return A reference to the copied-to error.
+     */
+    error& operator=(const error& rhs) = default;
+    /**
+     * @brief Move-assign a error.
+     * @param rhs The error to move.
+     * @return A reference to the moved-to error.
+     */
+    error& operator=(error&& rhs) = default;
+    /**
+     * @brief Retrieve the error's message.
+     * @return A null-terminated string indicating the cause of the error.
+     */
+    const char* what() const noexcept override;
+  };
+
+namespace global {
+
+  class table final {
+  private:
+    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND> m_pfns{ };
+  public:
+    /**
+     * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
+     */
+    static constexpr std::uint32_t specification_version() {
+      return ${specification.specification_version()};
+    }
+    /**
+     * @brief Construct a table.
+     * @param global A global loader function that behaves like the standard vkGetInstanceProcAddr() function.
+     * @throw error If the value of global is nullptr.
+     */
+    explicit table(const PFN_vkGetInstanceProcAddr global);
+    /**
+     * @brief Copy a table.
+     * @param other The table to copy.
+     */
+    table(const table& other) = default;
+    /// @cond
+    table(table&& other) = delete;
+    /// @endcond
+    /**
+     * @brief Destroy a table.
+     */
+    ~table() noexcept = default;
+    /**
+     * @brief Copy-assign a table.
+     * @param rhs The table to copy.
+     * @return A reference to the copied-to table.
+     */
+    table& operator=(const table& rhs) = default;
+    /// @cond
+    table& operator=(table&& rhs) = delete;
+    /// @endcond
+    /**
+     * @brief Retrieve the size of the table.
+     * @return The number of commands held in the table.
+     */
+    constexpr std::size_t size() const noexcept {
+      return m_pfns.size();
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     *          Although it's possible for vkGetInstanceProcAddr to resolve itself, the value returned by the
+     *          global_command::vkGetInstanceProcAddr input will always be the loader function used to construct the
+     *          table.
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* get(const command cmd) const noexcept {
+      return &m_pfns[static_cast<std::size_t>(cmd)];
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     *          Although it's possible for vkGetInstanceProcAddr to resolve itself, the value returned by the
+     *          global_command::vkGetInstanceProcAddr input will always be the loader function used to construct the
+     *          table.
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* operator()(const command cmd) const noexcept {
+      return get(cmd);
+    }
+  };
+
+}
+
+namespace instance {
+
+  /**
+   * @brief A dispatch table class for Vulkan instance commands.
+   */
+  class table final {
+  private:
+    VkInstance m_instance{ };
+    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND> m_pfns{ };
+  public:
+    /**
+     * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
+     */
+    static constexpr std::uint32_t specification_version() {
+      return ${specification.specification_version()};
+    }
+    /**
+     * @brief Construct an table.
+     * @details table objects do not have an ownership relationship with their parent
+     *          table. The lifetime of the global table may end immediately after construction.
+     * @param global A reference to a global::table.
+     * @param instance A valid VkInstance handle. The table shares ownership of the VkInstance, and
+     *                 so it must remain valid for the table's entire lifetime.
+     * @throw error If the value of instance is VK_NULL_HANDLE (a/k/a nullptr).
+     */
+    table(megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
+    /**
+     * @brief Copy an table.
+     * @param other The table to copy.
+     */
+    table(const table& other) = default;
+    /// @cond
+    table(table&& other) = delete;
+    /// @endcond
+    /**
+     * @brief Destroy an table.
+     */
+    ~table() noexcept = default;
+    /**
+     * @brief Copy-assign an table.
+     * @param rhs The table to copy.
+     * @return A reference to the copied-to table.
+     */
+    table& operator=(const table& rhs) = default;
+    /// @cond
+    table& operator=(table&& rhs) = delete;
+    /// @endcond
+    /**
+     * @brief Retrieve the VkInstance used to construct the table.
+     * @return The VkInstance handle that was used to construct the table.
+     */
+    VkInstance instance() const;
+    /**
+     * @brief Retrieve the size of the table.
+     * @return The number of commands held in the table.
+     */
+    constexpr std::size_t size() const noexcept {
+      return m_pfns.size();
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* get(const command cmd) const noexcept {
+      return &m_pfns[static_cast<std::size_t>(cmd)];
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* operator()(const command cmd) const noexcept {
+      return get(cmd);
+    }
+  };
+
+}
+
+namespace device {
+
+  /**
+   * @brief A dispatch table class for Vulkan device commands.
+   */
+  class table final {
+  private:
+    VkDevice m_device{ };
+    std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND> m_pfns{ };
+  public:
+    /**
+     * @brief Retrieve the version of the Vulkan specification that was used to generate this table.
+     * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
+     */
+    static constexpr std::uint32_t specification_version() {
+      return ${specification.specification_version()};
+    }
+    /**
+     * @brief Construct a table.
+     * @details table objects do not have an ownership relationship with their parent tables. The
+     *          lifetime of the parent tables may end immediately after construction.
+     * @param global A reference to a global::table.
+     * @param instance A reference to an instance::table.
+     * @param device A valid VkDevice handle. The table shares ownership of the VkDevice, and
+     *                 so it must remain valid for the table's entire lifetime.
+     * @throw error If the value of device is VK_NULL_HANDLE (a/k/a nullptr).
+     */
+    table(megatech::vulkan::dispatch::global::table& global, megatech::vulkan::dispatch::instance::table& instance,
+          const VkDevice device);
+    /**
+     * @brief Copy a table.
+     * @param other The table to copy.
+     */
+    table(const table& other) = default;
+    /// @cond
+    table(table&& other) = delete;
+    /// @endcond
+    /**
+     * @brief Destroy a table.
+     */
+    ~table() noexcept = default;
+    /**
+     * @brief Copy-assign a table.
+     * @param rhs The table to copy.
+     * @return A reference to the copied-to table.
+     */
+    table& operator=(const table& rhs) = default;
+    /// @cond
+    table& operator=(table&& rhs) = delete;
+    /// @endcond
+    /**
+     * @brief Retrieve the VkDevice used to construct the table.
+     * @return The VkDevice handle that was used to construct the table.
+     */
+    VkDevice device() const;
+    /**
+     * @brief Retrieve the size of the table.
+     * @return The number of commands held in the table.
+     */
+    constexpr std::size_t size() const noexcept {
+      return m_pfns.size();
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* get(const command cmd) const noexcept {
+      return &m_pfns[static_cast<std::size_t>(cmd)];
+    }
+    /**
+     * @brief Retrieve a function pointer from the table.
+     * @details Dispatch tables make no attempt to validate the function pointers they retrieve. This is the
+     *          responsibility of other modules (or clients).
+     * @param cmd The command to resolve.
+     * @return A function pointer or nullptr if the command wasn't available.
+     */
+    constexpr const void* operator()(const command cmd) const noexcept {
+      return get(cmd);
+    }
+  };
+
+}
+
+}
+#endif
+## @endcond

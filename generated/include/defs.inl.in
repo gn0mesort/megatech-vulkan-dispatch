@@ -1,0 +1,145 @@
+##
+## @file defs.inl.in
+## @brief Vulkan Dispatch Definitions Template
+## @author Alexander Rothman <gnomesort@megate.ch>
+## @date 2024
+## @copyright AGPL-3.0-or-later
+## @cond
+<%!
+  import sys
+  from argparse import ArgumentParser
+%>\
+<%
+  parser = ArgumentParser(prog="defs.inl.in", add_help=False, exit_on_error=False, prefix_chars="@")
+  parser.add_argument("@help", "@h", action="help", help="Display this help message and exit.")
+  parser.add_argument("@generate-defines", action="store_true", default=False,
+                      help="When enabled, generate \"#define\"s for enabled Vulkan APIs and extensions. These are "
+                           "always defined to 1.")
+try:
+    args = parser.parse_args(arguments)
+  except Exception as err:
+    print(err, file=sys.stderr)
+    parser.print_help(file=sys.stderr)
+    return STOP_RENDERING
+%>\
+/**
+ * @file defs.inl
+ * @brief Vulkan Dispatch Definitions
+ * @author Generated
+ * @date 2024
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_DEFS_INL
+#define MEGATECH_VULKAN_DISPATCH_DEFS_INL
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_BUILD_DATE
+ * @brief The date on which this file was generated in the format YYYYMMDD.
+ */
+#define MEGATECH_VULKAN_DISPATCH_BUILD_DATE (${f"{buildtime.year}{buildtime.month:02}{buildtime.day:02}"}ULL)
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_BUILD_TIME
+ * @brief The time at which this file was generated in the format HHMMSS.
+ */
+#define MEGATECH_VULKAN_DISPATCH_BUILD_TIME (${f"{buildtime.hour}{buildtime.minute:02}{buildtime.second:02}"}ULL)
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND
+ * @brief The total number of global commands emitted during generation.
+ */
+#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_GLOBAL_COMMAND (${len(commands.global_commands())})
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND
+ * @brief The total number of instance commands emitted during generation.
+ */
+#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_INSTANCE_COMMAND (${len(commands.instance_commands())})
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND
+ * @brief The total number of device commands emitted during generation.
+ */
+#define MEGATECH_VULKAN_DISPATCH_TABLE_MAX_DEVICE_COMMAND (${len(commands.device_commands())})
+% if args.generate_defines:
+% for name in specification.apis():
+<% api = specification.apis()[name] %>\
+% if api.enabled():
+/**
+ * @def MEGATECH_VULKAN_API_${api.name().replace("VK_", "").upper()}_ENABLED
+ * @brief Indicates that "${api.name()}" was enabled during generation.
+ */
+#define MEGATECH_VULKAN_API_${api.name().replace("VK_", "").upper()}_ENABLED (1)
+% endif
+% endfor
+% for name in specification.extensions():
+<% extension = specification.extensions()[name] %>\
+% if extension.enabled():
+/**
+ * @def MEGATECH_VULKAN_${extension.name().replace("VK_", "").upper()}_ENABLED
+ * @brief Indicates that "${extension.name()}" was enabled during generation.
+ */
+#define MEGATECH_VULKAN_${extension.name().replace("VK_", "").upper()}_ENABLED (1)
+% endif
+% endfor
+% endif
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE
+ * @brief Define a dispatchable Vulkan handle type.
+ * @details This is equivalent to the VK_DEFINE_HANDLE macro.
+ * @param object The name of the object to define.
+ */
+#define MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(object) \
+  struct object##_T; \
+  typedef object##_T* object
+
+#if defined(_WIN32)
+  #define MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV
+  #define MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV __stdcall
+  #define MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV MEGATECH_VULKAN_DISPATCH_API_CALL
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH < 7
+  #error "Vulkan is not supported for the 'armeabi' NDK ABI"
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH >= 7 && defined(__ARM_32BIT_STATE)
+  #define MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV __attribute__((pcs("aapcs-vfp")))
+  #define MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV
+  #define MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV MEGATECH_VULKAN_DISPATCH_API_ATTR
+#else
+  #define MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV
+  #define MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV
+  #define MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV
+#endif
+
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_API_CALL
+ * @brief The calling convention used for the Vulkan API.
+ * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_CALL.
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_API_CALL
+  #define MEGATECH_VULKAN_DISPATCH_API_CALL MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV
+#endif
+
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_API_ATTR
+ * @brief The function attribute used for the Vulkan API.
+ * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_ATTR.
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_API_ATTR
+  #define MEGATECH_VULKAN_DISPATCH_API_ATTR MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV
+#endif
+
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_API_PTR
+ * @brief The function pointer attribute used for the Vulkan API.
+ * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_PTR.
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_API_PTR
+  #define MEGATECH_VULKAN_DISPATCH_API_PTR MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV
+#endif
+
+extern "C" {
+
+MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(VkInstance);
+MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(VkDevice);
+
+typedef void (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkVoidFunction)(void);
+typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetInstanceProcAddr)(VkInstance, const char*);
+typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetDeviceProcAddr)(VkDevice, const char*);
+
+}
+
+#endif
+## @endcond

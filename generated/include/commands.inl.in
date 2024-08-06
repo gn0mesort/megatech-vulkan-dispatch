@@ -1,0 +1,66 @@
+##
+## @file commands.inl.in
+## @brief Vulkan Command Header Template
+## @author Alexander Rothman <gnomesort@megate.ch>
+## @date 2024
+## @copyright AGPL-3.0-or-later
+## @cond
+<%!
+  import sys
+  from argparse import ArgumentParser
+%>\
+<%
+  parser = ArgumentParser(prog="commands.inl.in", add_help=False, exit_on_error=False, prefix_chars="@")
+  parser.add_argument("@help", "@h", action="help", help="Display this help message and exit.")
+try:
+    args = parser.parse_args(arguments)
+  except Exception as err:
+    print(err, file=sys.stderr)
+    parser.print_help(file=sys.stderr)
+    return STOP_RENDERING
+%>\
+/**
+ * @file commands.inl
+ * @brief Vulkan Commands
+ * @author Generated
+ * @date 2024
+ */
+#ifndef MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
+#define MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
+#include <cstddef>
+
+namespace megatech::vulkan::dispatch {
+
+namespace global {
+
+  enum class command : std::size_t {
+% for cmd in sorted(commands.global_commands()):
+    ${cmd.name()},
+% endfor
+  };
+
+}
+
+namespace instance {
+
+  enum class command : std::size_t {
+% for cmd in sorted(commands.instance_commands()):
+    ${cmd.name()},
+% endfor
+  };
+
+}
+
+namespace device {
+
+  enum class command : std::size_t {
+% for cmd in sorted(commands.device_commands()):
+    ${cmd.name()},
+% endfor
+  };
+
+}
+
+}
+#endif
+## @endcond
