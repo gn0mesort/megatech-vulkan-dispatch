@@ -18,46 +18,46 @@ class VulkanFeature:
     # @param node The XML node representing the feature.
     # @throw ValueError If the XML node's tag is neither "feature" nor "extension".
     def __init__(self, node: ElementTree.Element):
-        self._deprecated = node.get("deprecatedby")
+        self.__deprecated = node.get("deprecatedby")
         if node.tag == "feature":
-            self._name = node.get("name")
-            self._version = VulkanVersion(node.get("number"))
-            self._supported_apis = set()
+            self.__name = node.get("name")
+            self.__version = VulkanVersion(node.get("number"))
+            self.__supported_apis = set()
             for api in node.get("api").split(","):
-                self._supported_apis.add(api)
+                self.__supported_apis.add(api)
         elif node.tag == "extension":
-            self._name = node.get("name")
-            self._supported_apis = set()
+            self.__name = node.get("name")
+            self.__supported_apis = set()
             for api in node.get("supported").split(","):
-                self._supported_apis.add(api)
-            version_node = node.find(f"require/enum/[@name='{self._name.upper()}_SPEC_VERSION']")
+                self.__supported_apis.add(api)
+            version_node = node.find(f"require/enum/[@name='{self.__name.upper()}_SPEC_VERSION']")
             if version_node is not None and version_node.get("value") is not None:
-                self._version = VulkanVersion(f"{version_node.get("value")}.0")
+                self.__version = VulkanVersion(f"{version_node.get("value")}.0")
             else:
-                self._version = VulkanVersion("0.0")
+                self.__version = VulkanVersion("0.0")
         else:
             raise ValueError(f"The tag \"{node.tag}\" is unrecognized.")
-        self._enabled = False
-        self._commands = set()
+        self.__enabled = False
+        self.__commands = set()
         for command in node.findall("require/command"):
-            self._commands.add(command.get("name"))
-        self._removals = set()
+            self.__commands.add(command.get("name"))
+        self.__removals = set()
         for command in node.findall("remove/command"):
-            self._removals.add(command.get("name"))
+            self.__removals.add(command.get("name"))
     ##
     # @brief Retrieve the feature's name.
     # @details The exact formatting of names differs between extensions and API versions. Extensions have a name
     #          in the format "VK_X_y" (e.g., "VK_KHR_surface"). API versions have names like: VK_VERSION_1_0.
     # @return The name of the VulkanFeature.
     def name(self) -> str:
-        return self._name
+        return self.__name
     ##
     # @brief Retrieve the set of APIs that support the feature.
     # @details The supported APIs are, for example, Vulkan and Vulkan Security Critical (SC). In the future, more APIs
     #          could be added.
     # @return The set of APIs supported by the VulkanFeature.
     def supported_apis(self) -> set[str]:
-        return self._supported_apis
+        return self.__supported_apis
     ##
     # @brief Retrieve the version of the feature.
     # @details API versions obviously provide their corresponding version number (e.g., VulkanVersion("1.2")).
@@ -65,7 +65,7 @@ class VulkanFeature:
     #          set to 0. Some extensions may not have a version number at all, resulting in a version of 0.0.
     # @return The version of the VulkanFeature.
     def version(self) -> VulkanVersion:
-        return self._version
+        return self.__version
     ##
     # @brief Determine whether or not the feature is enabled.
     # @details Whether or not a VulkanFeature is enabled is critical to generating anything useful from the
@@ -76,31 +76,31 @@ class VulkanFeature:
     #          are listed as disabled in the specification.
     # @return True if the VulkanFeature is enabled. Otherwise False.
     def enabled(self) -> bool:
-        return self._enabled
+        return self.__enabled
     ##
     # @brief Enable the feature.
     # @details All features are disabled by default.
     def enable(self) -> None:
-        self._enabled = True
+        self.__enabled = True
     ##
     # @brief Disable the feature.
     # @details All features are disabled by default.
     def disable(self) -> None:
-        self._enabled = False
+        self.__enabled = False
     ##
     # @brief Retrieve a set of command names that are referenced by the feature.
     # @return A set of command names.
     def commands(self) -> set[str]:
-        return self._commands
+        return self.__commands
     ##
     # @brief Retrieve a set of command names that are explicitly removed by the feature.
     # @return A set of command names.
     def removals(self) -> set[str]:
-        return self._removals
+        return self.__removals
     ##
     # @brief Determine whether or not this feature is deprecated.
     # @return True if the feature is deprecated. Otherwise False.
     def deprecated(self) -> bool:
-        return bool(self._deprecated)
+        return bool(self.__deprecated)
 
 __all__ = [ "VulkanFeature" ]

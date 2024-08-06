@@ -59,62 +59,62 @@ class VulkanSpecification:
                 raise ValueError("Failed to find an appropriate Vulkan specification file.")
         if not spec_path.is_file() or not spec_path.exists():
             raise ValueError(f"The path \"{spec_path}\" does not exist or is not a regular file.")
-        self._spec_path = spec_path
+        self.__spec_path = spec_path
         # Read the specification
         tree = None
-        with open(self._spec_path, "rb") as spec_file:
+        with open(self.__spec_path, "rb") as spec_file:
             tree = ElementTree.parse(spec_file)
         # Parse out commands
-        self._commands = { }
+        self.__commands = { }
         for command in tree.findall("commands/command"):
             parsed = VulkanCommand(tree, command)
-            self._commands[parsed.name()] = parsed
+            self.__commands[parsed.name()] = parsed
         # Parse out Vulkan APIs
         latest_api = VulkanVersion(api_version) if api_version != "latest" else None
-        self._apis = { }
+        self.__apis = { }
         for feature in tree.findall("feature"):
             parsed = VulkanFeature(feature)
             if api in parsed.supported_apis() and (latest_api is None or parsed.version() <= latest_api):
                 parsed.enable()
-            self._apis[parsed.name()] = parsed
+            self.__apis[parsed.name()] = parsed
         # Parse out Vulkan Extensions
-        self._extensions = { }
+        self.__extensions = { }
         for feature in tree.findall("extensions/extension"):
             parsed = VulkanFeature(feature)
             if api in parsed.supported_apis() and (parsed.name() in extensions or "all" in extensions):
                 deprecated = parsed.deprecated()
                 if not deprecated or (enable_deprecated and deprecated):
                     parsed.enable()
-            self._extensions[parsed.name()] = parsed
+            self.__extensions[parsed.name()] = parsed
         version_node = tree.find("types/type[name='VK_HEADER_VERSION']")
         if version_node is None:
             raise ValueError(f"{path} contains a corrupt specification.")
-        self._spec_version = int(version_node.find("name").tail.strip())
+        self.__spec_version = int(version_node.find("name").tail.strip())
     ##
     # @brief Retrieve the path of the specification.
     # @details This is either the input path or the result of a search.
     # @return A Path indicating the file that was used to create this VulkanSpecification.
     def specification_path(self) -> Path:
-        return self._spec_path
+        return self.__spec_path
     ##
     # @brief Retrieve the version of the specification.
     # @return The version of the VulkanSpecifcation.
     def specification_version(self) -> int:
-        return self._spec_version
+        return self.__spec_version
     ##
     # @brief Retrieve a dictionary of API features.
     # @return A dictionary mapping API feature names to API features.
     def apis(self) -> dict[str, VulkanFeature]:
-        return self._apis
+        return self.__apis
     ##
     # @brief Retrieve a dictionary of extension features.
     # @return A dictionary mapping extension feature names to extension features.
     def extensions(self) -> dict[str, VulkanFeature]:
-        return self._extensions
+        return self.__extensions
     ##
     # @brief Retrieve a dictionary of commands.
     # @return A dictionary mapping command names to commands.
     def commands(self) -> dict[str, VulkanCommand]:
-        return self._commands
+        return self.__commands
 
 __all__ = [ "VulkanSpecification" ]

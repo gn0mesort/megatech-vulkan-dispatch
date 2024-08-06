@@ -20,7 +20,7 @@ class Logger:
     # @brief Construct a Logger.
     # @param verbose Whether or not verbose outputs should be logged.
     def __init__(self, verbose: bool):
-        self._verbose = verbose
+        self.__verbose = verbose
     ##
     # @brief Unconditionally print a message.
     # @param message The message to print.
@@ -32,7 +32,7 @@ class Logger:
     # @param message The message to print.
     # @param **kwargs A list of keyword arguments that will get passed on during printing.
     def output_verbose(self, message: str, **kwargs) -> None:
-        if self._verbose:
+        if self.__verbose:
             print(message, **kwargs)
     ##
     # @brief Format a VulkanFeature object to a string and print it to verbose output.
@@ -86,43 +86,43 @@ class DispatchTableGenerator:
             raise FileNotFoundError(f"The path {template_path} does not exist.")
         elif not template_path.is_file():
             raise OSError(f"The path {template_path} exists but is not a file.")
-        self._template_path = template_path.absolute()
-        self._logger = Logger(verbose)
-        self._output_path = output_path
-        if self._output_path:
-            self._output_path = self._output_path.absolute()
-            if self._output_path.exists() and not self._output_path.is_file():
-                raise OSError(f"The path {self._output_path} does not refer to a regular file.")
-        self._specification_path = specification_path
-        if self._specification_path:
-            self._specification_path = self._specification_path.absolute()
-            if not self._specification_path.exists():
-                raise FileNotFoundError(f"The path {self._specification_path} does not exist.")
-            if not self._specification_path.is_file():
-                raise OSError(f"The path {self._specification_path} does not refer to a regular file.")
-        self._api_name = api_name
-        self._api_version = api_version
-        self._extensions = extensions
-        self._template_arguments = template_arguments
-        self._enable_deprecated = enable_deprecated
+        self.__template_path = template_path.absolute()
+        self.__logger = Logger(verbose)
+        self.__output_path = output_path
+        if self.__output_path:
+            self.__output_path = self.__output_path.absolute()
+            if self.__output_path.exists() and not self.__output_path.is_file():
+                raise OSError(f"The path {self.__output_path} does not refer to a regular file.")
+        self.__specification_path = specification_path
+        if self.__specification_path:
+            self.__specification_path = self.__specification_path.absolute()
+            if not self.__specification_path.exists():
+                raise FileNotFoundError(f"The path {self.__specification_path} does not exist.")
+            if not self.__specification_path.is_file():
+                raise OSError(f"The path {self.__specification_path} does not refer to a regular file.")
+        self.__api_name = api_name
+        self.__api_version = api_version
+        self.__extensions = extensions
+        self.__template_arguments = template_arguments
+        self.__enable_deprecated = enable_deprecated
     ##
     # @brief Run the application.
     def run(self) -> None:
-        spec = VulkanSpecification(self._specification_path, self._api_name, self._api_version, self._extensions,
-                                   self._enable_deprecated)
-        self._logger.output_verbose(f"Vulkan specification version {spec.specification_version()} located at "
+        spec = VulkanSpecification(self.__specification_path, self.__api_name, self.__api_version, self.__extensions,
+                                   self.__enable_deprecated)
+        self.__logger.output_verbose(f"Vulkan specification version {spec.specification_version()} located at "
                                     f"\"{spec.specification_path()}\"", file=sys.stderr)
         cmds = VulkanCommandSet()
         for name in spec.apis():
             api = spec.apis()[name]
-            self._logger.output_feature_verbose(api, file=sys.stderr)
+            self.__logger.output_feature_verbose(api, file=sys.stderr)
             if api.enabled():
                 for name in api.commands():
                     command = spec.commands()[name]
                     cmds.add(command)
         for name in spec.extensions():
             extension = spec.extensions()[name]
-            self._logger.output_feature_verbose(extension, file=sys.stderr)
+            self.__logger.output_feature_verbose(extension, file=sys.stderr)
             if extension.enabled():
                 for name in extension.commands():
                     command = spec.commands()[name]
@@ -140,21 +140,21 @@ class DispatchTableGenerator:
                     command = spec.commands()[name]
                     cmds.remove(command)
         for command in cmds.global_commands():
-            self._logger.output_command_verbose(command, file=sys.stderr)
+            self.__logger.output_command_verbose(command, file=sys.stderr)
         for command in cmds.instance_commands():
-            self._logger.output_command_verbose(command, file=sys.stderr)
+            self.__logger.output_command_verbose(command, file=sys.stderr)
         for command in cmds.device_commands():
-            self._logger.output_command_verbose(command, file=sys.stderr)
-        self._logger.output_verbose(f"Reading template from \"{self._template_path.absolute()}\"", file=sys.stderr)
-        template = Template(filename=self._template_path.absolute().as_posix(), output_encoding="utf-8")
+            self.__logger.output_command_verbose(command, file=sys.stderr)
+        self.__logger.output_verbose(f"Reading template from \"{self.__template_path.absolute()}\"", file=sys.stderr)
+        template = Template(filename=self.__template_path.absolute().as_posix(), output_encoding="utf-8")
         source = template.render(commands=cmds, specification=spec, buildtime=datetime.now(UTC),
-                                 arguments=self._template_arguments)
-        if self._output_path is not None:
-            self._logger.output_verbose(f"Writing output to \"{self._output_path}\".")
-            with open(self._output_path, "wb") as outfile:
+                                 arguments=self.__template_arguments)
+        if self.__output_path is not None:
+            self.__logger.output_verbose(f"Writing output to \"{self.__output_path}\".")
+            with open(self.__output_path, "wb") as outfile:
                 outfile.write(source)
         else:
-            self._logger.output_verbose("Writing output to standard output.")
+            self.__logger.output_verbose("Writing output to standard output.")
             sys.stdout.write(source.decode(encoding="utf-8"))
 
 __all__ = [ "DispatchTableGenerator" ]

@@ -45,42 +45,42 @@ class VulkanCommand:
             raise ValueError("\"node\" cannot be None.")
         aliased = node.get("alias")
         if aliased:
-            self._name = node.get("name")
+            self.__name = node.get("name")
             node = tree.find(f"commands/command/proto/name[.='{aliased}']/../..")
         else:
-            self._name = node.findtext("proto/name")
-        if self._name is None or node is None:
+            self.__name = node.findtext("proto/name")
+        if self.__name is None or node is None:
             raise ValueError("The input specification is corrupt.")
-        if not self._name.startswith("vk"):
+        if not self.__name.startswith("vk"):
             raise ValueError("Command names must begin with the \"vk\" namespace identifier.")
         global_commands = ("vkEnumerateInstanceVersion", "vkEnumerateInstanceExtensionProperties",
                            "vkEnumerateInstanceLayerProperties", "vkCreateInstance", "vkGetInstanceProcAddr")
-        if self._name in global_commands:
-            self._level = VulkanCommandLevel.GLOBAL
+        if self.__name in global_commands:
+            self.__level = VulkanCommandLevel.GLOBAL
         else:
             owner = node.findtext("param[1]/type")
             if owner in ("VkInstance", "VkPhysicalDevice"):
-                self._level = VulkanCommandLevel.INSTANCE
+                self.__level = VulkanCommandLevel.INSTANCE
             elif owner in ("VkDevice", "VkCommandBuffer", "VkQueue"):
-                self._level = VulkanCommandLevel.DEVICE
+                self.__level = VulkanCommandLevel.DEVICE
             else:
-                raise ValueError(f"The command \"{self._name}\" appears to have no level.")
+                raise ValueError(f"The command \"{self.__name}\" appears to have no level.")
     ##
     # @brief Retrieve the VulkanCommand's name.
     # @return The name of the VulkanCommand.
     def name(self) -> str:
-        return self._name
+        return self.__name
     ##
     # @brief Retrieve the VulkanCommand's level.
     # @return The level of the VulkanCommand.
     def level(self) -> VulkanCommandLevel:
-        return self._level
+        return self.__level
     ##
     # @brief Hash a VulkanCommand.
     # @details This is useful for creating sets of VulkanCommands.
     # @return The hash of the VulkanCommand's name (which must otherwise be unique in the specification.
     def __hash__(self) -> int:
-        return hash(self._name)
+        return hash(self.__name)
     ##
     # @brief Compare two VulkanCommands to determine if the left-hand command is less than the right.
     # @details This is a comparison of the command names only. Primarily, this is useful for sorting lists of
@@ -89,48 +89,48 @@ class VulkanCommand:
     # @param other The VulkanCommand to compare to.
     # @return True if the left-hand command is less than the right. Otherwise False.
     def __lt__(self, other) -> bool:
-        return self._name < other._name
+        return self.__name < other.__name
     ##
     # @brief Compare two VulkanCommands for equality.
     # @param other The VulkanCommand to compare to.
     # @return True if the left-hand command has the same name and level as the right. Otherwise False.
     def __eq__(self, other) -> bool:
-        return self._level == other._level and self._name == other._name
+        return self.__level == other.__level and self.__name == other.__name
 ##
 # @brief A specialized container for holding sets of VulkanCommand objects.
 class VulkanCommandSet:
     ##
     # @brief Constructs a new VulkanCommandSet without any commands in it.
     def __init__(self):
-        self._data = [ set(), set(), set() ]
+        self.__data = [ set(), set(), set() ]
     ##
     # @brief Add a VulkanCommand to the set.
     # @details The command will be stored based on its level.
     # @param command The VulkanCommand to store.
     def add(self, command: VulkanCommand) -> None:
-        self._data[int(command.level())].add(command)
+        self.__data[int(command.level())].add(command)
     ##
     # @brief Remove a VulkanCommand from the set.
     # @details If the requested command is not present in the set then this is a noop.
     # @param command The VulkanCommand to remove.
     def remove(self, command: VulkanCommand) -> None:
         if command in self:
-            self._data[int(command.level())].remove(command)
+            self.__data[int(command.level())].remove(command)
     ##
     # @brief Retrieve the set of global commands from the command set.
     # @return A set of global VulkanCommands from the VulkanCommandSet.
     def global_commands(self) -> set[VulkanCommand]:
-        return self._data[int(VulkanCommandLevel.GLOBAL)]
+        return self.__data[int(VulkanCommandLevel.GLOBAL)]
     ##
     # @brief Retrieve the set of instance commands from the command set.
     # @return A set of instance VulkanCommands from the VulkanCommandSet.
     def instance_commands(self) -> set[VulkanCommand]:
-        return self._data[int(VulkanCommandLevel.INSTANCE)]
+        return self.__data[int(VulkanCommandLevel.INSTANCE)]
     ##
     # @brief Retrieve the set of device commands from the command set.
     # @return A set of device VulkanCommands from the VulkanCommandSet.
     def device_commands(self) -> set[VulkanCommand]:
-        return self._data[int(VulkanCommandLevel.DEVICE)]
+        return self.__data[int(VulkanCommandLevel.DEVICE)]
     ##
     # @brief Determine if the command set is empty.
     # @return True if the set is empty. Otherwise False.
@@ -141,11 +141,11 @@ class VulkanCommandSet:
     # @param command The VulkanCommand to search for.
     # @return True if the input command is a member of the set. Otherwise False.
     def __contains__(self, command: VulkanCommand) -> bool:
-        return command in self._data[0] or command in self._data[1] or command in self._data[2]
+        return command in self.__data[0] or command in self.__data[1] or command in self.__data[2]
     ##
     # @brief Determine the length of the command set.
     # @return The length of the command set.
     def __len__(self) -> int:
-        return len(self._data[0]) + len(self._data[1]) + len(self._data[2])
+        return len(self.__data[0]) + len(self.__data[1]) + len(self.__data[2])
 
 __all__ = [ "VulkanCommandLevel", "VulkanCommand", "VulkanCommandSet" ]
