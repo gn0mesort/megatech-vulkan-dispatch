@@ -29,57 +29,12 @@ try:
 #define MEGATECH_VULKAN_DISPATCH_TABLES_INL
 #include <cinttypes>
 
-#include <string>
 #include <array>
 
 #include "defs.inl"
 #include "commands.inl"
 
 namespace megatech::vulkan::dispatch {
-  /**
-   * @brief A class representing errors generated during dispatch table construction.
-   */
-  class error final : public std::exception {
-  private:
-    std::string m_what{ };
-  public:
-    /**
-     * @brief Construct an error.
-     * @param what An error message.
-     */
-    explicit error(const std::string& what);
-    /**
-     * @brief Copy an error.
-     * @param other The error to copy.
-     */
-    error(const error& other) = default;
-    /**
-     * @brief Move an error.
-     * @param other The error to move.
-     */
-    error(error&& other) = default;
-    /**
-     * @brief Destroy a error.
-     */
-    ~error() noexcept = default;
-    /**
-     * @brief Copy-assign an error.
-     * @param rhs The error to copy.
-     * @return A reference to the copied-to error.
-     */
-    error& operator=(const error& rhs) = default;
-    /**
-     * @brief Move-assign an error.
-     * @param rhs The error to move.
-     * @return A reference to the moved-to error.
-     */
-    error& operator=(error&& rhs) = default;
-    /**
-     * @brief Retrieve the error's message.
-     * @return A null-terminated string indicating the cause of the error.
-     */
-    const char* what() const noexcept override;
-  };
 
 namespace global {
 
@@ -173,6 +128,59 @@ namespace global {
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);
     }
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv1a_cstr(#name): return get(command::name);
+/// @endcond
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
+     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
+     *          method at compile-time.
+     *
+     *          For this variant, a pointer can be safely reinterpreted as follows:
+     *
+     *          @code{.cpp}
+     *          // Table Initialization
+     *          // Retrieve "vkGetInstanceProcAddr" elsewhere.
+     *          auto gdt = table{ vkGetInstanceProcAddr };
+     *          // The implementation of fnv1a is left up to the client, but this library provides a `consteval`
+     *          // version as `megatech::vulkan::dispatch::internal::base::fnv1a_cstr()`.
+     *          constexpr auto hash = fnv1a("vkEnumerateInstanceVersion");
+     *          // Load
+     *          const auto ppfn = gdt(hash);
+     *          // The hash based getters **MAY** return nullptr.
+     *          if (!ppfn)
+     *          {
+     *            // ERROR!
+     *          }
+     *          auto vkEnumerateInstanceVersion = *reinterpret_cast<const PFN_vkEnumerateInstanceVersion*>(ppfn);
+     *          if (!vkEnumerateInstanceVersion)
+     *          {
+     *            // ERROR!
+     *          }
+     *          // It's safe to call "vkEnumerateInstanceVersion".
+     *          @endcode
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* get(const std::size_t hash) const noexcept {
+      switch (hash)
+      {
+      MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
+      default:
+        return nullptr;
+      }
+    }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* operator()(const std::size_t hash) const noexcept {
+      return get(hash);
+    }
+
   };
 
 }
@@ -257,6 +265,34 @@ namespace instance {
      */
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);
+    }
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv1a_cstr(#name): return get(command::name);
+/// @endcond
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
+     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
+     *          method at compile-time.
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* get(const std::size_t hash) const noexcept {
+      switch (hash)
+      {
+      MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
+      default:
+        return nullptr;
+      }
+    }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* operator()(const std::size_t hash) const noexcept {
+      return get(hash);
     }
   };
 
@@ -344,6 +380,34 @@ namespace device {
      */
     constexpr const void* operator()(const command cmd) const noexcept {
       return get(cmd);
+    }
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv1a_cstr(#name): return get(command::name);
+/// @endcond
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
+     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
+     *          method at compile-time.
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* get(const std::size_t hash) const noexcept {
+      switch (hash)
+      {
+      MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
+      default:
+        return nullptr;
+      }
+    }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+    /**
+     * @brief Retrieve a pointer to a function in the table.
+     * @param hash An FNV1a hash of the name of the command to retrieve.
+     * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     */
+    constexpr const void* operator()(const std::size_t hash) const noexcept {
+      return get(hash);
     }
   };
 

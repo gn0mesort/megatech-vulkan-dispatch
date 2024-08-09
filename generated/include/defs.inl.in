@@ -30,6 +30,10 @@ try:
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_DEFS_INL
 #define MEGATECH_VULKAN_DISPATCH_DEFS_INL
+#include <cinttypes>
+
+#include <string>
+
 /**
  * @def MEGATECH_VULKAN_DISPATCH_BUILD_DATE
  * @brief The date on which this file was generated in the format YYYYMMDD.
@@ -70,8 +74,8 @@ try:
  * @details This is equivalent to the VK_DEFINE_HANDLE macro.
  * @param object The name of the object to define.
  */
-#define MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(object) \
-  struct object##_T; \
+#define MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(object) ${"\\"}
+  struct object##_T; ${"\\"}
   typedef object##_T* object
 
 /// @cond
@@ -95,7 +99,7 @@ try:
 /**
  * @def MEGATECH_VULKAN_DISPATCH_API_CALL
  * @brief The calling convention used for the Vulkan API.
- * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_CALL.
+ * @details This can be overridden at the client's choice. This **MUST** be equivalent to VKAPI_CALL.
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_API_CALL
   #define MEGATECH_VULKAN_DISPATCH_API_CALL MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV
@@ -103,7 +107,7 @@ try:
 /**
  * @def MEGATECH_VULKAN_DISPATCH_API_ATTR
  * @brief The function attribute used for the Vulkan API.
- * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_ATTR.
+ * @details This can be overridden at the client's choice. This **MUST** be equivalent to VKAPI_ATTR.
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_API_ATTR
   #define MEGATECH_VULKAN_DISPATCH_API_ATTR MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV
@@ -111,11 +115,34 @@ try:
 /**
  * @def MEGATECH_VULKAN_DISPATCH_API_PTR
  * @brief The function pointer attribute used for the Vulkan API.
- * @details This can be overridden at the client's choice. This must be equivalent to VKAPI_PTR.
+ * @details This can be overridden at the client's choice. This **MUST** be equivalent to VKAPI_PTR.
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_API_PTR
   #define MEGATECH_VULKAN_DISPATCH_API_PTR MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV
 #endif
+
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST ${"\\"}
+<% count = 0 %>\
+% for cmd in sorted(commands.global_commands()):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.global_commands()) - 1 else ""}
+<% count += 1 %>\
+% endfor
+
+#define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST ${"\\"}
+<% count = 0 %>\
+% for cmd in sorted(commands.instance_commands()):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.instance_commands()) - 1 else "" }
+<% count += 1 %>\
+% endfor
+
+#define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST ${"\\"}
+<% count = 0 %>\
+% for cmd in sorted(commands.device_commands()):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.device_commands()) - 1 else ""}
+<% count += 1 %>\
+% endfor
+/// @endcond
 
 extern "C" {
 
@@ -147,6 +174,132 @@ typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetInstanceP
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceProcAddr.html
  */
 typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetDeviceProcAddr)(VkDevice, const char*);
+
+}
+
+/// @cond INTERNAL
+namespace megatech::vulkan::dispatch::internal::base {
+
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV1A_CSTR
+ * @brief Define a `consteval` FNV1a hash function.
+ * @details FNV1a is a simple, insecure, hash function. For this use case, I think it is a good solution. These
+ *          functions are always resolved to a value at compile-time so, even if you have an insane case where this
+ *          library is being used by a web server, I don't think it could realistically be used to attack the library.
+ * @param result_type The type of the result (and, therefore, the length of the hash). For example, std::uint32_t, or
+ *                    std::uint64_t.
+ * @param id A unique id value to be appended to the function's name. This should probably be the bit length of the
+ *           hash.
+ * @param offset The FNV1a offset. This should be computed for the width of the hash.
+ * @param prime The FNV1a prime. This should be computed for the width of the hash.
+ */
+#define MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV1A_CSTR(result_type, id, offset, prime) ${"\\"}
+  consteval result_type fnv1a_cstr_##id(const char* str) { ${"\\"}
+    auto hash = static_cast<result_type>((offset)); ${"\\"}
+    while (*str) ${"\\"}
+    { ${"\\"}
+      hash ^= *str; ${"\\"}
+      hash *= static_cast<result_type>((prime)); ${"\\"}
+      ++str; ${"\\"}
+    } ${"\\"}
+    return hash; ${"\\"}
+  } ${"\\"}
+  static_assert(true)
+
+/**
+ * @brief Compute a 32-bit FNV1a hash of a C-style string.
+ * @param str A NUL (``'${"\\"}0'``) terminated byte string.
+ * @return An unsigned 32-bit integer value.
+ */
+MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV1A_CSTR(std::uint32_t, 32, 0x811c9dc5, 0x01000193);
+/**
+ * @brief Compute a 64-bit FNV1a hash of a C-style string.
+ * @param str A NUL (``'${"\\"}0'``) terminated byte string.
+ * @return An unsigned 64-bit integer value.
+ */
+MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV1A_CSTR(std::uint64_t, 64, 0xcbf29ce484222325, 0x100000001b3);
+/**
+ * @brief Compute an FNV1a hash of a C-style string.
+ * @details Unlike the bit width specific variants of this function, this variant will compute a hash based on the
+ *          width of `std::size_t`. By definition in C++20, the width of `std::size_t` cannot be less than 16.
+ *
+ *          There are 3 options for how this function works. First if `sizeof(std::size_t)` is greater than or equal to
+ *          `sizeof(std::uint64_t)`, the 64-bit variant is invoked. If that fails but `sizeof(std::size_t)` is
+ *          greater than or equal to `sizeof(std::uint32_t)`, the 32-bit variant is invoked. Finally if
+ *          `sizeof(std::size_t)` is less than `sizeof(std::uint32_t)`, the 32-bit variant is invoked and then folded
+ *          into a 16-bit value.
+ *
+ *          In any case, this function is always resolved to a value at compile-time.
+ * @param str A NUL (``'${"\\"}0'``) terminated byte string.
+ * @return A `std::size_t` value containing a 64-bit, 32-bit, or 16-bit hash value as appropriate.
+ * @see https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function
+ */
+consteval std::size_t fnv1a_cstr(const char* str) {
+  static_assert(sizeof(std::size_t) >= sizeof(std::uint16_t));
+  if constexpr (sizeof(std::size_t) >= sizeof(std::uint64_t))
+  {
+    return fnv1a_cstr_64(str);
+  }
+  else if (sizeof(std::size_t) >= sizeof(std::uint32_t))
+  {
+    return fnv1a_cstr_32(str);
+  }
+  else if (sizeof(std::size_t) >= sizeof(std::uint16_t))
+  {
+    const auto hash = fnv1a_cstr_32(str);
+    return static_cast<std::uint16_t>((hash >> 16) ^ (hash & 0xff'ff));
+  }
+}
+
+}
+/// @endcond
+
+namespace megatech::vulkan::dispatch {
+
+  /**
+   * @brief A class representing errors generated during dispatch table construction.
+   */
+  class error final : public std::exception {
+  private:
+    std::string m_what{ };
+  public:
+    /**
+     * @brief Construct an error.
+     * @param what An error message.
+     */
+    explicit error(const std::string& what);
+    /**
+     * @brief Copy an error.
+     * @param other The error to copy.
+     */
+    error(const error& other) = default;
+    /**
+     * @brief Move an error.
+     * @param other The error to move.
+     */
+    error(error&& other) = default;
+    /**
+     * @brief Destroy an error.
+     */
+    ~error() noexcept = default;
+    /**
+     * @brief Copy-assign an error.
+     * @param rhs The error to copy.
+     * @return A reference to the copied-to error.
+     */
+    error& operator=(const error& rhs) = default;
+    /**
+     * @brief Move-assign an error.
+     * @param rhs The error to move.
+     * @return A reference to the moved-to error.
+     */
+    error& operator=(error&& rhs) = default;
+    /**
+     * @brief Retrieve the error's message.
+     * @return A null-terminated string indicating the cause of the error.
+     */
+    const char* what() const noexcept override;
+  };
 
 }
 

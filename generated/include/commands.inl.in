@@ -27,46 +27,54 @@ try:
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
 #define MEGATECH_VULKAN_DISPATCH_COMMANDS_INL
-#include <cstddef>
+#include <cinttypes>
+
+#include "defs.inl"
 
 namespace megatech::vulkan::dispatch {
 
 namespace global {
 
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) name,
+/// @endcond
   /**
    * @brief An enumeration of globally available Vulkan command names.
    */
   enum class command : std::size_t {
-% for cmd in sorted(commands.global_commands()):
-    ${cmd.name()},
-% endfor
+    MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
   };
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
 
 namespace instance {
 
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) name,
+/// @endcond
   /**
    * @brief An enumeration of instance-level Vulkan command names.
    */
   enum class command : std::size_t {
-% for cmd in sorted(commands.instance_commands()):
-    ${cmd.name()},
-% endfor
+    MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
   };
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
 
 namespace device {
 
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) name,
+/// @endcond
   /**
    * @brief An enumeration of device-level Vulkan command names.
    */
   enum class command : std::size_t {
-% for cmd in sorted(commands.device_commands()):
-    ${cmd.name()},
-% endfor
+    MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
   };
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
 
