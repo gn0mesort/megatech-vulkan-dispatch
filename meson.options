@@ -20,3 +20,5 @@ option('extra_defines', type: 'feature', value: 'disabled',
 option('deprecated_vulkan_features', type: 'feature', value: 'enabled',
        description: 'Generate command names for deprecated Vulkan commands. Run "tools/dispatch-table-generator -h" ' +
                     'for more information. Enabled by default.')
+option('enabled_doxygen_sections', type: 'array', value: [],
+       description: 'Extra sections, on top of the default, to enable when generating documentation.')
