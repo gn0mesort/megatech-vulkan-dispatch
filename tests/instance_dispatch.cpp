@@ -14,6 +14,29 @@ TEST_CASE("Instance dispatch tables should resolve function pointers.", "[dispat
   vkDestroyInstance(instance, nullptr);
 }
 
+TEST_CASE("Instance dispatch tables should resolve function pointers via hash values.", "[dispatch]") {
+  auto gdt = megatech::vulkan::dispatch::global::table{ vkGetInstanceProcAddr };
+  auto instance = create_instance(gdt);
+  REQUIRE(instance != nullptr);
+  auto idt = megatech::vulkan::dispatch::instance::table{ gdt, instance };
+  REQUIRE(instance == idt.instance());
+  DECLARE_PFN_BY_HASH(idt, vkDestroyInstance);
+#ifdef MEGATECH_VULKAN_DISPATCH_EXT_DEBUG_UTILS_ENABLED
+  DECLARE_PFN_BY_HASH_UNCHECKED(idt, vkCreateDebugUtilsMessengerEXT);
+  REQUIRE(vkCreateDebugUtilsMessengerEXT == nullptr);
+#endif
+  vkDestroyInstance(instance, nullptr);
+}
+
+TEST_CASE("Instance dispatch tables should fail to resolve unknown hash values.", "[dispatch][!shouldfail]") {
+  auto gdt = megatech::vulkan::dispatch::global::table{ vkGetInstanceProcAddr };
+  auto instance = create_instance(gdt);
+  REQUIRE(instance != nullptr);
+  auto idt = megatech::vulkan::dispatch::instance::table{ gdt, instance };
+  REQUIRE(instance == idt.instance());
+  get_pfn_by_name(idt, "vkNotARealVulkanCommandMEGATECH");
+}
+
 TEST_CASE("Instance dispatch table construction should fail if the instance handle is null.", "[dispatch]") {
   using megatech::vulkan::dispatch::error;
   using gtable = megatech::vulkan::dispatch::global::table;
