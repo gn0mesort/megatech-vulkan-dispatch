@@ -22,3 +22,5 @@ option('deprecated_vulkan_features', type: 'feature', value: 'enabled',
                     'for more information. Enabled by default.')
 option('enabled_doxygen_sections', type: 'array', value: [],
        description: 'Extra sections, on top of the default, to enable when generating documentation.')
+option('generator_warnings', type: 'feature', value: 'disabled',
+       description: 'Whether or not the generator should emit warning messages. Disabled by default.')

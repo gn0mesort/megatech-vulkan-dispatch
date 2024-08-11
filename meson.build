@@ -28,9 +28,12 @@ template_arguments = [ ]
 if get_option('extra_defines').allowed()
   template_arguments = [ '--template-arguments=@generate-defines' ]
 endif
-specification = get_option('specification')
-generator = [ find_program('tools/dispatch-table-generator'), '-o@OUTPUT@', '--api=@0@'.format(get_option('api')),
+generator = [ find_program('dispatch-table-generator'), '-o@OUTPUT@', '--api=@0@'.format(get_option('api')),
               '--api-version=@0@'.format(get_option('api_version')), '--extensions=@0@'.format(extensions) ]
+if not get_option('generator_warnings').allowed()
+  generator += '--quiet'
+endif
+specification = get_option('specification')
 if specification != ''
   generator += '--specification=@0@'.format(specification)
 endif
@@ -46,9 +49,6 @@ install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'inc
 install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/megatech/vulkan/dispatch/commands.hpp',
                       'include/megatech/vulkan/dispatch/tables.hpp'), install_dir: 'include/megatech/vulkan/dispatch')
 subdir('tests')
-if get_option('tests').allowed()
-  test('Dispatch Table Generator', find_program(files('tools/tests/test-dispatch-table-generator')))
-endif
 doxygen = find_program('doxygen')
 doc_env = environment()
 doc_env.set('DOXYGEN_PROJECT_NAME', meson.project_name())
@@ -67,7 +67,5 @@ doc_env.set('DOXYGEN_STRIP_FROM_PATH', ' '.join(doc_strips))
 extra_css = files('documentation/extra.css')[0]
 doc_env.set('DOXYGEN_HTML_EXTRA_STYLESHEET', extra_css.full_path())
 doc_env.set('DOXYGEN_ENABLED_SECTIONS', ' '.join(get_option('enabled_doxygen_sections')))
-libdoc = custom_target('library-documentation', output: 'documentation', build_always_stale: true,
-                       command: [ doxygen, files('Doxyfile') ], env: doc_env, depends: headers)
-subdir('tools')
-alias_target('all-documentation', libdoc, toolsdoc)
+custom_target('documentation', output: 'documentation', build_always_stale: true,
+              command: [ doxygen, files('Doxyfile') ], env: doc_env, depends: headers)
