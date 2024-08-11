@@ -41,8 +41,9 @@ if not get_option('deprecated_vulkan_features').allowed()
   generator += '--no-enable-deprecated'
 endif
 subdir('generated/include')
-sources = [ ]
-subdir('generated/src')
+sources = [
+  files('src/megatech/vulkan/dispatch/tables.cpp')
+]
 lib = library(meson.project_name(), headers + sources, version: version, include_directories: includes, install: true)
 megatech_vulkan_dispatch_dep = declare_dependency(link_with: lib, sources: headers, include_directories: includes)
 install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'include/megatech/vulkan')

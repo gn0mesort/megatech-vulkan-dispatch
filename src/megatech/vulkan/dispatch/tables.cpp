@@ -1,28 +1,7 @@
-##
-## @file tables.cpp.in
-## @brief Vulkan Dispatch Table Template Source
-## @author Alexander Rothman <gnomesort@megate.ch>
-## @date 2024
-## @copyright AGPL-3.0-or-later
-## @cond
-<%!
-  import sys
-  from argparse import ArgumentParser
-%>\
-<%
-  parser = ArgumentParser(prog="tables.cpp.in", add_help=False, exit_on_error=False, prefix_chars="@")
-  parser.add_argument("@help", "@h", action="help", help="Display this help message and exit.")
-  try:
-    args = parser.parse_args(arguments)
-  except Exception as err:
-    print(err, file=sys.stderr)
-    parser.print_help(file=sys.stderr)
-    return STOP_RENDERING
-%>\
 /**
  * @file table.cpp
  * @brief Vulkan Dispatch Tables
- * @author Generated
+ * @author Alexander Rothman <gnomesort@megate.ch>
  * @date 2024
  */
 #include "megatech/vulkan/dispatch/tables.hpp"
@@ -41,22 +20,22 @@ namespace megatech::vulkan::dispatch {
 
 namespace global {
 
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) G(global, nullptr, cmd);
   table::table(const PFN_vkGetInstanceProcAddr global) {
     if (!global)
     {
       throw error{ "The global loader command, \"vkGetInstanceProcAddr\", cannot be null." };
     }
-% for cmd in sorted(commands.global_commands()):
-% if cmd.name() != "vkGetInstanceProcAddr":
-    G(global, nullptr, ${cmd.name()});
-% endif
-% endfor
+    MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
     m_pfns[static_cast<std::size_t>(command::vkGetInstanceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(global);
   }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
 
 namespace instance {
+
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) I(cl, instance, cmd);
 
   table::table(megatech::vulkan::dispatch::global::table& global, const VkInstance instance) {
     using gcmd = megatech::vulkan::dispatch::global::command;
@@ -65,11 +44,10 @@ namespace instance {
       throw error{ "The \"VkInstance\" handle cannot be null." };
     }
     const auto cl = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
-% for cmd in sorted(commands.instance_commands()):
-    I(cl, instance, ${cmd.name()});
-% endfor
+    MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
     m_instance = instance;
   }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkInstance table::instance() const {
     return m_instance;
@@ -79,6 +57,7 @@ namespace instance {
 
 namespace device {
 
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, device, cmd);
   table::table(megatech::vulkan::dispatch::global::table& global,
                megatech::vulkan::dispatch::instance::table& instance, const VkDevice device) {
     using gcmd = megatech::vulkan::dispatch::global::command;
@@ -89,14 +68,11 @@ namespace device {
     const auto gipa = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     const auto igdpa = reinterpret_cast<PFN_vkGetDeviceProcAddr>(gipa(instance.instance(), "vkGetDeviceProcAddr"));
     const auto cl = reinterpret_cast<PFN_vkGetDeviceProcAddr>(igdpa(device, "vkGetDeviceProcAddr"));
-% for cmd in sorted(commands.device_commands()):
-% if cmd.name() != "vkGetDeviceProcAddr":
-    D(cl, device, ${cmd.name()});
-% endif
-% endfor
+    MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_pfns[static_cast<std::size_t>(command::vkGetDeviceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(cl);
     m_device = device;
   }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkDevice table::device() const {
     return m_device;
@@ -105,4 +81,3 @@ namespace device {
 }
 
 }
-## @endcond
