@@ -9,7 +9,7 @@ option('api', type: 'combo', choices: [ 'vulkan', 'vulkansc' ], value: 'vulkan',
 option('api_version', type: 'string', value: 'latest',
        description: 'The version of the selected API to use when generating headers. This can be a valid Vulkan ' +
                     'version string like "1.2" or the special string "latest". Run ' +
-                    '"dispatch-table-generator -h" for more information.')
+                    '"dispatch-table-generator -h" for more information.', yield: true)
 option('extensions', type: 'array', value: [ 'all' ],
        description: 'A set of Vulkan API extensions to use when generating headers. This array can contain valid ' +
                     'Vulkan extension names like "VK_KHR_surface" as well as the special value "all". Run ' +
