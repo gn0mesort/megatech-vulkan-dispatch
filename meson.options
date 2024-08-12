@@ -1,26 +1,28 @@
 option('tests', type: 'feature', value: 'disabled', description: 'Build unit tests. Disabled by default.')
 option('specification', type: 'string', value: '',
        description: 'The path to a Vulkan XML specification file. If this is empty, the default system ' +
-                    'specification is selected instead. Run "tools/dispatch-table-generator -h" for more ' +
-                    'information.')
+                    'specification is selected instead. Run "dispatch-table-generator -h" for more ' +
+                    'information.', yield: true)
 option('api', type: 'combo', choices: [ 'vulkan', 'vulkansc' ], value: 'vulkan',
-       description: 'The API to select when generating headers. Run "tools/dispatch-table-generator -h" for more ' +
-                    'information.')
+       description: 'The API to select when generating headers. Run "dispatch-table-generator -h" for more ' +
+                    'information.', yield: true)
 option('api_version', type: 'string', value: 'latest',
        description: 'The version of the selected API to use when generating headers. This can be a valid Vulkan ' +
                     'version string like "1.2" or the special string "latest". Run ' +
-                    '"tools/dispatch-table-generator -h" for more information.')
+                    '"dispatch-table-generator -h" for more information.')
 option('extensions', type: 'array', value: [ 'all' ],
        description: 'A set of Vulkan API extensions to use when generating headers. This array can contain valid ' +
                     'Vulkan extension names like "VK_KHR_surface" as well as the special value "all". Run ' +
-                    '"tools/dispatch-table-generator -h" for more information.')
+                    '"dispatch-table-generator -h" for more information.', yield: true)
 option('extra_defines', type: 'feature', value: 'disabled',
        description: 'Generate extra definitions like MEGATECH_VULKAN_DISPATCH_KHR_SURFACE_ENABLED in "defs.hpp". ' +
-                    'These values are always defined to 1. This is disabled by default to save space.')
+                    'These values are always defined to 1. This is disabled by default to save space.', yield: true)
 option('deprecated_vulkan_features', type: 'feature', value: 'enabled',
-       description: 'Generate command names for deprecated Vulkan commands. Run "tools/dispatch-table-generator -h" ' +
-                    'for more information. Enabled by default.')
+       description: 'Generate command names for deprecated Vulkan commands. Run "dispatch-table-generator -h" ' +
+                    'for more information. Enabled by default.', yield: true)
 option('enabled_doxygen_sections', type: 'array', value: [],
        description: 'Extra sections, on top of the default, to enable when generating documentation.')
 option('generator_warnings', type: 'feature', value: 'disabled',
-       description: 'Whether or not the generator should emit warning messages. Disabled by default.')
+       description: 'Whether or not the generator should emit warning messages. Run "dispatch-table-generator -h" ' +
+                    'Disabled by default.', yield: true)
+
