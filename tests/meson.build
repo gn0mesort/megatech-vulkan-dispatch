@@ -9,3 +9,6 @@ if get_option('tests').allowed()
   test('Instance Dispatch', executable('test-instance-dispatch', 'instance_dispatch.cpp', dependencies: test_deps))
   test('Device Dispatch', executable('test-device-dispatch', 'device_dispatch.cpp', dependencies: test_deps))
 endif
+if get_option('benchmarks').allowed()
+  benchmark('Benchmark', executable('test-benchmark', 'benchmark.cpp', dependencies: test_deps), verbose: true, timeout: 0)
+endif

@@ -1,4 +1,5 @@
 option('tests', type: 'feature', value: 'disabled', description: 'Build unit tests. Disabled by default.')
+option('benchmarks', type: 'feature', value: 'disabled', description: 'Build benchmarks. Disabled by default')
 option('specification', type: 'string', value: '',
        description: 'The path to a Vulkan XML specification file. If this is empty, the default system ' +
                     'specification is selected instead. Run "dispatch-table-generator -h" for more ' +
