@@ -123,25 +123,25 @@ try:
 
 /// @cond
 #define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST ${"\\"}
-<% count = 0 %>\
-% for cmd in sorted(commands.global_commands()):
-  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.global_commands()) - 1 else ""}
-<% count += 1 %>\
+% for i, cmd in enumerate(sorted(commands.global_commands())):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.global_commands()) - 1 else ""}
 % endfor
+
+#define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_COUNT (${len(commands.global_commands())})
 
 #define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST ${"\\"}
-<% count = 0 %>\
-% for cmd in sorted(commands.instance_commands()):
-  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.instance_commands()) - 1 else "" }
-<% count += 1 %>\
+% for i, cmd in enumerate(sorted(commands.instance_commands())):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.instance_commands()) - 1 else "" }
 % endfor
 
+#define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_COUNT (${len(commands.instance_commands())})
+
 #define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST ${"\\"}
-<% count = 0 %>\
-% for cmd in sorted(commands.device_commands()):
-  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if count < len(commands.device_commands()) - 1 else ""}
-<% count += 1 %>\
+% for i, cmd in enumerate(sorted(commands.device_commands())):
+  MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.device_commands()) - 1 else ""}
 % endfor
+
+#define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_COUNT (${len(commands.device_commands())})
 /// @endcond
 
 extern "C" {
@@ -255,6 +255,15 @@ consteval std::size_t fnv1a_cstr(const char* str) {
 /// @endcond
 
 namespace megatech::vulkan::dispatch {
+  /**
+   * @brief Retrieve the version of the Vulkan specification that was used to generate this library.
+   * @details In general, this **SHOULD** be less than or equal to the patch version of the value returned by
+   *          `vkEnumerateInstanceVersion()`.
+   * @return An unsigned 32-bit number indicating the version of the Vulkan specification.
+   */
+  constexpr std::size_t specification_version() {
+    return ${specification.specification_version()};
+  }
 
   /**
    * @brief A class representing errors generated during dispatch table construction.
