@@ -3,6 +3,7 @@
  * @brief Vulkan Dispatch Tables
  * @author Alexander Rothman <gnomesort@megate.ch>
  * @date 2024
+ * @copyright AGPL-3.0-or-later
  */
 #include "megatech/vulkan/dispatch/tables.hpp"
 
