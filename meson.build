@@ -50,7 +50,7 @@ install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'inc
 install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/megatech/vulkan/dispatch/commands.hpp',
                       'include/megatech/vulkan/dispatch/tables.hpp'), install_dir: 'include/megatech/vulkan/dispatch')
 subdir('tests')
-doxygen = find_program('doxygen')
+doxygen = find_program('doxygen', disabler: true)
 doc_env = environment()
 doc_env.set('DOXYGEN_PROJECT_NAME', meson.project_name())
 doc_env.set('DOXYGEN_PROJECT_NUMBER', meson.project_version())
@@ -68,5 +68,5 @@ doc_env.set('DOXYGEN_STRIP_FROM_PATH', ' '.join(doc_strips))
 extra_css = files('documentation/extra.css')[0]
 doc_env.set('DOXYGEN_HTML_EXTRA_STYLESHEET', extra_css.full_path())
 doc_env.set('DOXYGEN_ENABLED_SECTIONS', ' '.join(get_option('enabled_doxygen_sections')))
-custom_target('documentation', output: 'documentation', build_always_stale: true,
+custom_target(output: 'documentation', build_always_stale: true,
               command: [ doxygen, files('Doxyfile') ], env: doc_env, depends: headers)
