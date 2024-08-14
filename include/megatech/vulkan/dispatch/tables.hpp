@@ -104,9 +104,9 @@ namespace global {
 /// @endcond
     /**
      * @brief Retrieve a pointer to a function in the table.
-     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
-     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
-     *          method at compile-time.
+     * @details Although `get(command)` always returns a valid pointer (unless you create an invalid command value on
+     *          purpose), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to
+     *          the method at compile-time.
      *
      *          For this variant, a pointer can be safely reinterpreted as follows:
      *
@@ -131,6 +131,22 @@ namespace global {
      *          }
      *          // It's safe to call "vkEnumerateInstanceVersion".
      *          @endcode
+     *
+     *          Although constant indexing is much simpler and less fault prone, the hash API provides a
+     *          build-independent method for function pointer resolution. To put it simply, as long as client code
+     *          computes the hash correctly, there's no need to know anything else about how this library was built.
+     *          Conversely, the @ref command API relies on knowledge of the order in which commands were emitted into
+     *          @ref defs.inl. This means that, for example, if an extension is disabled the mapping of @ref command
+     *          values to dispatch table indices changes. This API, on the other hand, doesn't exhibit that problem.
+     *          A client using hash values can safely use this library in different configurations as long as the hash
+     *          values are computed correctly.
+     *
+     *          In short, if you rely on the hash API, you can be certain that resolution is always correct. You just
+     *          have to check for `nullptr` twice. If you rely on the @ref command API, you must always use the
+     *          library in the correct configuration. If you don't, the dispatch table could be indexed improperly.
+     *
+     *          If you can't guarantee the compile-time configuration libmegatech-vulkan-dispatch, you should use
+     *          this API.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
      */
@@ -147,6 +163,7 @@ namespace global {
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     * @see ::global::table::get(const std::size_t) const
      */
     constexpr const void* operator()(const std::size_t hash) const noexcept {
       return get(hash);
@@ -233,11 +250,9 @@ namespace instance {
 /// @endcond
     /**
      * @brief Retrieve a pointer to a function in the table.
-     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
-     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
-     *          method at compile-time.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     * @see ::global::table::get(const std::size_t) const
      */
     constexpr const void* get(const std::size_t hash) const noexcept {
       switch (hash)
@@ -252,6 +267,7 @@ namespace instance {
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     * @see ::global::table::get(const std::size_t) const
      */
     constexpr const void* operator()(const std::size_t hash) const noexcept {
       return get(hash);
@@ -339,11 +355,9 @@ namespace device {
 /// @endcond
     /**
      * @brief Retrieve a pointer to a function in the table.
-     * @details Although `get(command)` always returns a valid pointer (unless you manipulate create an invalid command
-     *          value), this overload can fail and return a `nullptr`. Failure occurs for any hash value unknown to the
-     *          method at compile-time.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     * @see ::global::table::get(const std::size_t) const
      */
     constexpr const void* get(const std::size_t hash) const noexcept {
       switch (hash)
@@ -358,6 +372,7 @@ namespace device {
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV1a hash of the name of the command to retrieve.
      * @return A generic read-only pointer to the desired Vulkan command if it is found. Otherwise null.
+     * @see ::global::table::get(const std::size_t) const
      */
     constexpr const void* operator()(const std::size_t hash) const noexcept {
       return get(hash);
