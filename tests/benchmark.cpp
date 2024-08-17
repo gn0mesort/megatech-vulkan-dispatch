@@ -64,7 +64,7 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
   };
   BENCHMARK("Global Preload with Compile-Time Hash") {
     using namespace megatech::vulkan::dispatch;
-    const auto ppfn = gdt.get(internal::base::fnv1a_cstr("vkEnumerateInstanceLayerProperties"));
+    const auto ppfn = gdt.get(internal::base::fnv_1a_cstr("vkEnumerateInstanceLayerProperties"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkEnumerateInstanceLayerProperties*>(ppfn);
     CHECK_PFN(pfn);
@@ -110,7 +110,7 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
   };
   BENCHMARK("Instance Preload with Compile-Time Hash") {
     using namespace megatech::vulkan::dispatch;
-    const auto ppfn = idt.get(internal::base::fnv1a_cstr("vkDestroyInstance"));
+    const auto ppfn = idt.get(internal::base::fnv_1a_cstr("vkDestroyInstance"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkDestroyInstance*>(ppfn);
     CHECK_PFN(pfn);
@@ -160,7 +160,7 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
   };
   BENCHMARK("Device Preload with Compile-Time Hash") {
     using namespace megatech::vulkan::dispatch;
-    const auto ppfn = ddt.get(internal::base::fnv1a_cstr("vkDestroyDevice"));
+    const auto ppfn = ddt.get(internal::base::fnv_1a_cstr("vkDestroyDevice"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkDestroyDevice*>(ppfn);
     CHECK_PFN(pfn);

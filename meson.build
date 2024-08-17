@@ -42,7 +42,7 @@ if not get_option('deprecated_vulkan_features').allowed()
 endif
 subdir('generated/include')
 sources = [
-  files('src/megatech/vulkan/dispatch/tables.cpp')
+  files('src/megatech/vulkan/dispatch/error.cpp', 'src/megatech/vulkan/dispatch/tables.cpp')
 ]
 lib = library(meson.project_name(), headers + sources, version: version, include_directories: includes, install: true)
 megatech_vulkan_dispatch_dep = declare_dependency(link_with: lib, sources: headers, include_directories: includes)

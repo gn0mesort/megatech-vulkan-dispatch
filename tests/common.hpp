@@ -54,38 +54,28 @@ extern "C" VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInst
   while (0)
 
 
-// This is all identical to the library definition **EXCEPT** they are computed at runtime.
-#define FNV1A_CSTR(result_type, id, offset, prime) \
-  inline result_type fnv1a_cstr_##id(const char* cstr) { \
-    auto hash = static_cast<result_type>((offset)); \
-    while (*cstr) \
-    { \
-      hash ^= *cstr; \
-      hash *= static_cast<result_type>((prime)); \
-      ++cstr; \
-    } \
-    return hash; \
-  } \
-  static_assert(true)
+// This is all identical to the library definition **EXCEPT** it can be computed at runtime.
+template <std::unsigned_integral Type, Type Offset, Type Prime, Type MaxDigits = std::numeric_limits<Type>::digits>
+inline Type basic_fnv1a_cstr(const char* str) {
+  static_assert(MaxDigits <= std::numeric_limits<Type>::digits, "The maximum number of radix digits in an FNV-1a hash "
+                "cannot exceed the the width of its data type.");
+  auto hash = static_cast<Type>(Offset);
+  while (*str)
+  {
+    hash ^= *str;
+    hash *= static_cast<Type>(Prime);
+    ++str;
+  }
+  // Mask off extraneous digits to ensure that values are as expected.
+  if constexpr (std::numeric_limits<Type>::digits > MaxDigits)
+  {
+    return hash & ((static_cast<Type>(1) << MaxDigits) - 1);
+  }
+  return hash;
+}
 
-FNV1A_CSTR(std::uint32_t, 32, 0x811c9dc5, 0x01000193);
-FNV1A_CSTR(std::uint64_t, 64, 0xcbf29ce484222325, 0x100000001b3);
-
-inline std::size_t fnv1a_cstr(const char* str) {
-  static_assert(sizeof(std::size_t) >= sizeof(std::uint16_t));
-  if constexpr (sizeof(std::size_t) >= sizeof(std::uint64_t))
-  {
-    return fnv1a_cstr_64(str);
-  }
-  else if (sizeof(std::size_t) >= sizeof(std::uint32_t))
-  {
-    return fnv1a_cstr_32(str);
-  }
-  else if (sizeof(std::size_t) >= sizeof(std::uint16_t))
-  {
-    const auto hash = fnv1a_cstr_32(str);
-    return (hash >> 16) ^ (hash & 0xff'ff);
-  }
+inline std::uint_least64_t fnv1a_cstr(const char* str) {
+  return basic_fnv1a_cstr<std::uint_least64_t, 0xcbf29ce484222325, 0x100000001b3, 64>(str);
 }
 
 template <typename DispatchTable>

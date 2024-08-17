@@ -1,23 +1,19 @@
 /**
  * @file table.cpp
  * @brief Vulkan Dispatch Tables
- * @author Alexander Rothman <gnomesort@megate.ch>
+ * @author Alexander Rothman <[gnomesort@megate.ch](mailto:gnomesort@megate.ch)>
  * @date 2024
  * @copyright AGPL-3.0-or-later
  */
 #include "megatech/vulkan/dispatch/tables.hpp"
+
+#include "megatech/vulkan/dispatch/error.hpp"
 
 #define G(cl, ctx, cmd) (m_pfns[static_cast<std::size_t>(megatech::vulkan::dispatch::global::command::cmd)] = (cl)((ctx), (#cmd)))
 #define I(cl, ctx, cmd) (m_pfns[static_cast<std::size_t>(megatech::vulkan::dispatch::instance::command::cmd)] = (cl)((ctx), (#cmd)))
 #define D(cl, ctx, cmd) (m_pfns[static_cast<std::size_t>(megatech::vulkan::dispatch::device::command::cmd)] = (cl)((ctx), (#cmd)))
 
 namespace megatech::vulkan::dispatch {
-
-  error::error(const std::string& what) : m_what{ what } { }
-
-  const char* error::what() const noexcept {
-    return m_what.data();
-  }
 
 namespace global {
 

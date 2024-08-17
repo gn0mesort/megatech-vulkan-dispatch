@@ -26,4 +26,3 @@ option('enabled_doxygen_sections', type: 'array', value: [],
 option('generator_warnings', type: 'feature', value: 'disabled',
        description: 'Whether or not the generator should emit warning messages. Run "dispatch-table-generator -h" ' +
                     'Disabled by default.', yield: true)
-
