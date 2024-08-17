@@ -49,6 +49,8 @@ megatech_vulkan_dispatch_dep = declare_dependency(link_with: lib, sources: heade
 install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'include/megatech/vulkan')
 install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/megatech/vulkan/dispatch/commands.hpp',
                       'include/megatech/vulkan/dispatch/tables.hpp'), install_dir: 'include/megatech/vulkan/dispatch')
+install_headers(files('include/megatech/vulkan/dispatch/internal/base/fnv_1a.hpp'),
+                install_dir: 'include/megatech/vulkan/dispatch/internal/base')
 subdir('tests')
 doxygen = find_program('doxygen', disabler: true)
 doc_env = environment()
