@@ -58,7 +58,7 @@ namespace global {
     {
     MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
     default:
-      throw error{ "The input hash value does not map to any global Vulkan command." };
+      throw dispatch::error{ "The input hash value does not map to any global Vulkan command." };
     }
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -93,7 +93,7 @@ namespace instance {
     {
     MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
     default:
-      throw error{ "The input hash value does not map to any instance-level Vulkan command." };
+      throw dispatch::error{ "The input hash value does not map to any instance-level Vulkan command." };
     }
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -128,7 +128,7 @@ namespace device {
     {
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     default:
-      throw error{ "The input hash value does not map to any device-level Vulkan command." };
+      throw dispatch::error{ "The input hash value does not map to any device-level Vulkan command." };
     }
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND

@@ -21,7 +21,7 @@ namespace global {
   table::table(const PFN_vkGetInstanceProcAddr global) {
     if (!global)
     {
-      throw error{ "The global loader command, \"vkGetInstanceProcAddr\", cannot be null." };
+      throw dispatch::error{ "The global loader command, \"vkGetInstanceProcAddr\", cannot be null." };
     }
     MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
     m_pfns[static_cast<std::size_t>(command::vkGetInstanceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(global);
@@ -38,7 +38,7 @@ namespace instance {
     using gcmd = megatech::vulkan::dispatch::global::command;
     if (!instance)
     {
-      throw error{ "The \"VkInstance\" handle cannot be null." };
+      throw dispatch::error{ "The \"VkInstance\" handle cannot be null." };
     }
     const auto cl = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
@@ -60,7 +60,7 @@ namespace device {
     using gcmd = megatech::vulkan::dispatch::global::command;
     if (!device)
     {
-      throw error{ "The \"VkDevice\" handle cannot be null." };
+      throw dispatch::error{ "The \"VkDevice\" handle cannot be null." };
     }
     const auto gipa = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     const auto igdpa = reinterpret_cast<PFN_vkGetDeviceProcAddr>(gipa(instance.instance(), "vkGetDeviceProcAddr"));
