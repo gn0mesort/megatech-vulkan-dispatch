@@ -45,18 +45,16 @@ try:
  */
 #define MEGATECH_VULKAN_DISPATCH_BUILD_TIME (${f"{buildtime.hour}{buildtime.minute:02}{buildtime.second:02}"}ULL)
 % if args.generate_defines:
-% for name in specification.apis():
-<% api = specification.apis()[name] %>\
-% if api.enabled():
+% for feature in specification.features().values():
+% if feature.enabled():
 /**
- * @def MEGATECH_VULKAN_API_${api.name().replace("VK_", "").upper()}_ENABLED
- * @brief Indicates that "${api.name()}" was enabled during generation.
+ * @def MEGATECH_VULKAN_API_${feature.name().replace("VK_", "").upper()}_ENABLED
+ * @brief Indicates that "${feature.name()}" was enabled during generation.
  */
-#define MEGATECH_VULKAN_API_${api.name().replace("VK_", "").upper()}_ENABLED (1)
+#define MEGATECH_VULKAN_API_${feature.name().replace("VK_", "").upper()}_ENABLED (1)
 % endif
 % endfor
-% for name in specification.extensions():
-<% extension = specification.extensions()[name] %>\
+% for extension in specification.extensions().values():
 % if extension.enabled():
 /**
  * @def MEGATECH_VULKAN_DISPATCH_${extension.name().replace("VK_", "").upper()}_ENABLED
