@@ -1,6 +1,9 @@
 #ifndef COMMON_HPP
 #define COMMON_HPP
 
+#include <cstddef>
+#include <cinttypes>
+
 #include <catch2/catch_session.hpp>
 #include <catch2/catch_test_macros.hpp>
 #include <catch2/benchmark/catch_benchmark.hpp>

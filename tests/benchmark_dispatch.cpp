@@ -166,7 +166,10 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
     CHECK_PFN(pfn);
     return pfn;
   };
-
+  DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
+  vkDestroyDevice(device, nullptr);
+  DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+  vkDestroyInstance(instance, nullptr);
 }
 
 int main(int argc, char** argv) {

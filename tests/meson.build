@@ -18,6 +18,6 @@ if get_option('tests').allowed()
         executable('test-device-dispatch', files('test_device_dispatch.cpp'), dependencies: dependencies))
 endif
 if get_option('benchmarks').allowed()
-  benchmark('Dispatch', executable('benchmark-dispatch', 'benchmark_dispatch.cpp', dependencies: dependencies),
+  benchmark('Dispatch', executable('benchmark-dispatch', files('benchmark_dispatch.cpp'), dependencies: dependencies),
             verbose: true, timeout: 0)
 endif

@@ -8,6 +8,7 @@ TEST_CASE("Device dispatch tables should resolve function pointers.", "[dispatch
   REQUIRE(device != nullptr);
   auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt, device };
   REQUIRE(device == ddt.device());
+  REQUIRE(instance == ddt.instance());
   DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
 #ifdef MEGATECH_VULKAN_DISPATCH_KHR_SWAPCHAIN_ENABLED
   DECLARE_DEVICE_PFN_UNCHECKED(ddt, vkCreateSwapchainKHR);
@@ -47,6 +48,7 @@ TEST_CASE("Device dispatch tables should resolve function pointers via hash valu
   REQUIRE(device != nullptr);
   auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt, device };
   REQUIRE(device == ddt.device());
+  REQUIRE(instance == ddt.instance());
   DECLARE_PFN_BY_HASH(ddt, vkDestroyDevice);
 #ifdef MEGATECH_VULKAN_DISPATCH_KHR_SWAPCHAIN_ENABLED
   DECLARE_PFN_BY_HASH_UNCHECKED(ddt, vkCreateSwapchainKHR);
@@ -65,6 +67,7 @@ TEST_CASE("Device dispatch tables should fail to resolve unknown hash values.", 
   REQUIRE(device != nullptr);
   auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt, device };
   REQUIRE(device == ddt.device());
+  REQUIRE(instance == ddt.instance());
   get_pfn_by_name(ddt, "vkNotARealVulkanCommandMEGATECH");
 }
 
