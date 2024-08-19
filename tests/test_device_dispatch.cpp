@@ -14,6 +14,29 @@ TEST_CASE("Device dispatch tables should resolve function pointers.", "[dispatch
   REQUIRE(vkCreateSwapchainKHR == nullptr);
 #endif
   vkDestroyDevice(device, nullptr);
+  DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+  vkDestroyInstance(instance, nullptr);
+}
+
+TEST_CASE("Device dispatch tables should resolve function pointers with only a VkInstance.", "[dispatch]") {
+  auto gdt = megatech::vulkan::dispatch::global::table{ vkGetInstanceProcAddr };
+  auto instance = create_instance(gdt);
+  REQUIRE(instance != nullptr);
+  {
+    auto ddt = megatech::vulkan::dispatch::device::table{ gdt, instance };
+    REQUIRE(ddt.instance() == instance);
+    REQUIRE(ddt.device() == nullptr);
+    DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
+  }
+  auto idt = megatech::vulkan::dispatch::instance::table{ gdt, instance };
+  {
+    auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt };
+    REQUIRE(ddt.instance() == idt.instance());
+    REQUIRE(ddt.device() == nullptr);
+    DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
+  }
+  DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+  vkDestroyInstance(instance, nullptr);
 }
 
 TEST_CASE("Device dispatch tables should resolve function pointers via hash values.", "[dispatch]") {
@@ -30,6 +53,8 @@ TEST_CASE("Device dispatch tables should resolve function pointers via hash valu
   REQUIRE(vkCreateSwapchainKHR == nullptr);
 #endif
   vkDestroyDevice(device, nullptr);
+  DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+  vkDestroyInstance(instance, nullptr);
 }
 
 TEST_CASE("Device dispatch tables should fail to resolve unknown hash values.", "[dispatch][!shouldfail]") {
@@ -41,6 +66,14 @@ TEST_CASE("Device dispatch tables should fail to resolve unknown hash values.", 
   auto ddt = megatech::vulkan::dispatch::device::table{ gdt, idt, device };
   REQUIRE(device == ddt.device());
   get_pfn_by_name(ddt, "vkNotARealVulkanCommandMEGATECH");
+}
+
+TEST_CASE("Device dispatch table construction should fail if the instance handle is null.", "[dispatch]") {
+  using megatech::vulkan::dispatch::error;
+  using gtable = megatech::vulkan::dispatch::global::table;
+  using dtable = megatech::vulkan::dispatch::device::table;
+  auto gdt = gtable{ vkGetInstanceProcAddr };
+  REQUIRE_THROWS_AS((dtable{ gdt, nullptr }), error);
 }
 
 TEST_CASE("Device dispatch table construction should fail if the device handle is null.", "[dispatch]") {

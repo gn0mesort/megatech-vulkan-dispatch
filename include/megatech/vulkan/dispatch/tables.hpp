@@ -192,7 +192,7 @@ namespace instance {
      *                 so it must remain valid for the table's entire lifetime.
      * @throw dispatch::error If the value of instance is `VK_NULL_HANDLE`.
      */
-    table(megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
+    table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
     /**
      * @brief Copy a table.
      * @param other The table to copy.
@@ -285,6 +285,7 @@ namespace device {
    */
   class table final {
   private:
+    VkInstance m_instance{ };
     VkDevice m_device{ };
     std::array<PFN_vkVoidFunction, MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_COUNT> m_pfns{ };
   public:
@@ -293,13 +294,46 @@ namespace device {
      * @details table objects do not have an ownership relationship with their parent tables. The
      *          lifetime of the parent tables may end immediately after construction.
      * @param global A reference to a global::table.
-     * @param instance A reference to an instance::table.
+     * @param instance A reference to an instance::table. The table shares ownership of the instance::table's
+     *                 ::VkInstance, and so it must remain valid for the table's entire lifetime.
      * @param device A valid ::VkDevice handle. The table shares ownership of the ::VkDevice, and
      *                 so it must remain valid for the table's entire lifetime.
-     * @throw dispatch::error If the value of device is `VK_NULL_HANDLE`.
+     * @throw dispatch::error If the value of `device` is null.
      */
-    table(megatech::vulkan::dispatch::global::table& global, megatech::vulkan::dispatch::instance::table& instance,
-          const VkDevice device);
+    table(const megatech::vulkan::dispatch::global::table& global,
+          const megatech::vulkan::dispatch::instance::table& instance, const VkDevice device);
+    /**
+     * @brief Construct a table from a ::VkInstance handle.
+     * @details Generally, you should prefer to construct device dispatch tables on a per device basis. Properly
+     *          resolved device function pointers provide the minimum overhead for applications. However, it is
+     *          possible to resolve device command functions per instance instead. The obvious benefit to this is
+     *          having far fewer function pointers in memory (for multi-device applications). The downside is that
+     *          these instance level function pointers still have to dispatch to the correct device internally. The
+     *          result is greater overhead and a potential to dispatch to a function that doesn't exist.
+     *
+     *          Crucially, device extension commands (e.g., `vkCreateSwapchainKHR`) will resolve to valid function
+     *          pointers as long as any of the known devices support the extension. This means that you cannot rely
+     *          on a null function pointer being resolved for disabled or otherwise unavailable device extensions in
+     *          this configuration.
+     *
+     *          In short, I'm providing this functionality because I can imagine it being useful to someone somewhere.
+     *          If you're only going to use one device for the lifetime of your application, I think that you should
+     *          use the device constructor instead.
+     * @param global A reference to a global::table.
+     * @param instance A valid ::VkInstance handle. The table shares ownership of the ::VkInstance, and so it must
+     *                 remain valid for the table's entire lifetime.
+     * @throw dispatch::error If the value of `instance` is null.
+     */
+    table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
+    /**
+     * @brief Construct a table from an instance-level table.
+     * @param global A reference to a global::table.
+     * @param instance A reference to an instance::table. The table shares ownership of the instance::table's
+     *                 ::VkInstance, and so it must remain valid for the table's entire lifetime.
+     * @see ::table(const megatech::vulkan::dispatch::global::table&, const VkInstance)
+     */
+    table(const megatech::vulkan::dispatch::global::table& global,
+          const megatech::vulkan::dispatch::instance::table& instance);
     /**
      * @brief Copy a table.
      * @param other The table to copy.
@@ -322,8 +356,14 @@ namespace device {
     table& operator=(table&& rhs) = delete;
     /// @endcond
     /**
+     * @brief Retrieve the ::VkInstance used to construct the table.
+     * @return The ::VkInstance handle that was used to construct the table.
+     */
+    VkInstance instance() const;
+    /**
      * @brief Retrieve the ::VkDevice used to construct the table.
-     * @return The ::VkDevice handle that was used to construct the table.
+     * @return The ::VkDevice handle that was used to construct the table if any. Null is returned in all other
+     *         cases.
      */
     VkDevice device() const;
     /**

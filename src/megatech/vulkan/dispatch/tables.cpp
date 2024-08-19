@@ -34,7 +34,7 @@ namespace instance {
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) I(cl, instance, cmd);
 
-  table::table(megatech::vulkan::dispatch::global::table& global, const VkInstance instance) {
+  table::table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance) {
     using gcmd = megatech::vulkan::dispatch::global::command;
     if (!instance)
     {
@@ -55,8 +55,8 @@ namespace instance {
 namespace device {
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, device, cmd);
-  table::table(megatech::vulkan::dispatch::global::table& global,
-               megatech::vulkan::dispatch::instance::table& instance, const VkDevice device) {
+  table::table(const megatech::vulkan::dispatch::global::table& global,
+               const megatech::vulkan::dispatch::instance::table& instance, const VkDevice device) {
     using gcmd = megatech::vulkan::dispatch::global::command;
     if (!device)
     {
@@ -67,9 +67,40 @@ namespace device {
     const auto cl = reinterpret_cast<PFN_vkGetDeviceProcAddr>(igdpa(device, "vkGetDeviceProcAddr"));
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_pfns[static_cast<std::size_t>(command::vkGetDeviceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(cl);
+    m_instance = instance.instance();
     m_device = device;
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, instance, cmd);
+  table::table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance) {
+    using gcmd = megatech::vulkan::dispatch::global::command;
+    if (!instance)
+    {
+      throw dispatch::error{ "The \"VkInstance\" handle cannot be null." };
+    }
+    const auto gipa = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
+    const auto cl = reinterpret_cast<PFN_vkGetInstanceProcAddr>(gipa(instance, "vkGetInstanceProcAddr"));
+    MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
+    m_instance = instance;
+  }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
+
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, (instance.instance()), cmd);
+  table::table(const megatech::vulkan::dispatch::global::table& global,
+               const megatech::vulkan::dispatch::instance::table& instance) {
+    using gcmd = megatech::vulkan::dispatch::global::command;
+    const auto gipa = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
+    const auto cl = reinterpret_cast<PFN_vkGetInstanceProcAddr>(gipa(instance.instance(), "vkGetInstanceProcAddr"));
+    MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
+    m_instance = instance.instance();
+  }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
+  VkInstance table::instance() const {
+    return m_instance;
+  }
 
   VkDevice table::device() const {
     return m_device;
