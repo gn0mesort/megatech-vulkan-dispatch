@@ -1,15 +1,23 @@
-test_deps = [
-  dependency('catch2', required: get_option('tests')),
-  dependency('vulkan', required: get_option('tests')),
+dependencies = [
   megatech_vulkan_dispatch_dep
 ]
 
+if get_option('tests').allowed() or get_option('benchmarks').allowed()
+  dependencies += dependency('catch2')
+  dependencies += dependency('vulkan')
+endif
+
 if get_option('tests').allowed()
-  test('FNV-1a Hashes', executable('test-fnv-1a', files('test_fnv_1a.cpp'), dependencies: test_deps))
-  test('Global Dispatch', executable('test-global-dispatch', files('global_dispatch.cpp'), dependencies: test_deps))
-  test('Instance Dispatch', executable('test-instance-dispatch', files('instance_dispatch.cpp'), dependencies: test_deps))
-  test('Device Dispatch', executable('test-device-dispatch', files('device_dispatch.cpp'), dependencies: test_deps))
+  test('FNV-1a Hashes',
+        executable('test-fnv-1a', files('test_fnv_1a.cpp'), dependencies: dependencies))
+  test('Global Dispatch',
+        executable('test-global-dispatch', files('test_global_dispatch.cpp'), dependencies: dependencies))
+  test('Instance Dispatch',
+        executable('test-instance-dispatch', files('test_instance_dispatch.cpp'), dependencies: dependencies))
+  test('Device Dispatch',
+        executable('test-device-dispatch', files('test_device_dispatch.cpp'), dependencies: dependencies))
 endif
 if get_option('benchmarks').allowed()
-  benchmark('Benchmark', executable('test-benchmark', 'benchmark.cpp', dependencies: test_deps), verbose: true, timeout: 0)
+  benchmark('Dispatch', executable('benchmark-dispatch', 'benchmark_dispatch.cpp', dependencies: dependencies),
+            verbose: true, timeout: 0)
 endif
