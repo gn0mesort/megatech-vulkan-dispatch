@@ -92,6 +92,23 @@ TEST_CASE("Device dispatch table construction should fail if the device handle i
   vkDestroyInstance(instance, nullptr);
 }
 
+TEST_CASE("Device dispatch tables should be constructible from a base table and a VkDevice.", "[dispatch]") {
+  auto gdt = megatech::vulkan::dispatch::global::table{ vkGetInstanceProcAddr };
+  auto instance = create_instance(gdt);
+  REQUIRE(instance != nullptr);
+  auto idt = megatech::vulkan::dispatch::instance::table{ gdt, instance };
+  auto iddt = megatech::vulkan::dispatch::device::table{ gdt, idt };
+  auto device = create_device(idt);
+  REQUIRE(device != nullptr);
+  auto ddt = megatech::vulkan::dispatch::device::table{ iddt, device };
+  REQUIRE(device == ddt.device());
+  REQUIRE(instance == ddt.instance());
+  DECLARE_DEVICE_PFN(ddt, vkDestroyDevice);
+  vkDestroyDevice(device, nullptr);
+  DECLARE_INSTANCE_PFN(idt, vkDestroyInstance);
+  vkDestroyInstance(instance, nullptr);
+}
+
 int main(int argc, char** argv) {
   return Catch::Session().run(argc, argv);
 }

@@ -334,6 +334,17 @@ namespace device {
      */
     table(const megatech::vulkan::dispatch::global::table& global,
           const megatech::vulkan::dispatch::instance::table& instance);
+
+    /**
+     * @brief Construct a ::table by extending an existing table with a ::VkDevice.
+     * @param base A base ::table. This **MUST** be derived from a ::VkInstance and have a null ::VkDevice. The
+     *             resulting table will share ownership of the base ::table's ::VkInstance, so it must remain valid
+     *             for the ::table's entire lifetime.
+     * @param device A ::VkDevice to create the extended ::table from. The ::table shares ownership of the device, so
+     *               it must remain valid for the ::table's entire lifetime.
+     * @throw dispatch::error If the base table already has a ::VkDevice loaded or if `device` is null.
+     */
+    table(const table& base, const VkDevice device);
     /**
      * @brief Copy a table.
      * @param other The table to copy.
