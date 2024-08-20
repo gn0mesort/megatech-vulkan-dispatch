@@ -3,6 +3,7 @@ project(
   [ 'cpp' ],
   version: '0.0.0-alpha1',
   license: 'AGPL-3.0-or-later',
+  license_files: [ 'LICENSES' ],
   default_options: [
     'cpp_std=c++20',
     'warning_level=3',
@@ -48,9 +49,12 @@ lib = library(meson.project_name(), headers + sources, version: version, include
 megatech_vulkan_dispatch_dep = declare_dependency(link_with: lib, sources: headers, include_directories: includes)
 install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'include/megatech/vulkan')
 install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/megatech/vulkan/dispatch/commands.hpp',
-                      'include/megatech/vulkan/dispatch/tables.hpp'), install_dir: 'include/megatech/vulkan/dispatch')
+                      'include/megatech/vulkan/dispatch/error.hpp', 'include/megatech/vulkan/dispatch/tables.hpp'),
+                install_dir: 'include/megatech/vulkan/dispatch')
 install_headers(files('include/megatech/vulkan/dispatch/internal/base/fnv_1a.hpp'),
                 install_dir: 'include/megatech/vulkan/dispatch/internal/base')
+pkgconfig = import('pkgconfig')
+pkgconfig.generate(lib, subdirs: 'megatech', url: 'https://github.com/gn0mesort/megatech-vulkan-dispatch')
 subdir('tests')
 doxygen = find_program('doxygen', disabler: true)
 doc_env = environment()
