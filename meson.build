@@ -3,7 +3,7 @@ project(
   [ 'cpp' ],
   version: '0.0.0-alpha1',
   license: 'AGPL-3.0-or-later',
-  license_files: [ 'LICENSES' ],
+  license_files: [ 'LICENSE' ],
   default_options: [
     'cpp_std=c++20',
     'warning_level=3',
