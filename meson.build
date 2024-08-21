@@ -13,6 +13,7 @@ project(
   ]
 )
 version = meson.project_version().split('-')[0]
+description = 'Megatech Vulkan Dispatch Library'
 pymod = import('python')
 python3 = pymod.find_installation('python3')
 has_tools = run_command(python3, '-c',
@@ -54,7 +55,8 @@ install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/mega
 install_headers(files('include/megatech/vulkan/dispatch/internal/base/fnv_1a.hpp'),
                 install_dir: 'include/megatech/vulkan/dispatch/internal/base')
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(lib, subdirs: 'megatech', url: 'https://github.com/gn0mesort/megatech-vulkan-dispatch')
+pkgconfig.generate(lib, subdirs: 'megatech', url: 'https://github.com/gn0mesort/megatech-vulkan-dispatch',
+                   description: description)
 subdir('tests')
 doxygen = find_program('doxygen', disabler: true)
 doc_env = environment()
