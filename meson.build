@@ -55,7 +55,7 @@ install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/mega
 install_headers(files('include/megatech/vulkan/dispatch/internal/base/fnv_1a.hpp'),
                 install_dir: 'include/megatech/vulkan/dispatch/internal/base')
 pkgconfig = import('pkgconfig')
-pkgconfig.generate(lib, subdirs: 'megatech', url: 'https://github.com/gn0mesort/megatech-vulkan-dispatch',
+pkgconfig.generate(lib, url: 'https://github.com/gn0mesort/megatech-vulkan-dispatch',
                    description: description)
 subdir('tests')
 doxygen = find_program('doxygen', disabler: true)
