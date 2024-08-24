@@ -62,6 +62,30 @@ namespace global {
     }
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case command::name: return dispatch::internal::base::fnv_1a_cstr(#name);
+/// @endcond
+  /**
+   * @brief Convert a ::command to an FNV-1a hash value.
+   * @details This function is the inverse of ::to_command(const std::uint_least64_t). At run-time this is a simple
+   *          mapping from ::command values to hashes. The hash values are not actually recomputed. If you pass an
+   *          ill-formed command value this function will generate a run-time error.
+   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
+   *            of the ::command's name. For example:
+   *            @code{.cpp}
+   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
+   *            @endcode
+   * @throw dispatch::error If the input command is ill-formed.
+   */
+  constexpr std::uint_least64_t to_hash(const command cmd) {
+    switch (cmd)
+    {
+    MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
+    default:
+      throw dispatch::error{ "The input command is outside the valid range of possible global commands." };
+    }
+  }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
 
@@ -94,6 +118,28 @@ namespace instance {
     MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
     default:
       throw dispatch::error{ "The input hash value does not map to any instance-level Vulkan command." };
+    }
+  }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case command::name: return dispatch::internal::base::fnv_1a_cstr(#name);
+/// @endcond
+  /**
+   * @brief Convert a ::command to an FNV-1a hash value.
+   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
+   *            of the ::command's name. For example:
+   *            @code{.cpp}
+   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
+   *            @endcode
+   * @throw dispatch::error If the input command is ill-formed.
+   * @see ::global::to_hash
+   */
+  constexpr std::uint_least64_t to_hash(const command cmd) {
+    switch (cmd)
+    {
+    MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
+    default:
+      throw dispatch::error{ "The input command is outside the valid range of possible instance commands." };
     }
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -133,8 +179,32 @@ namespace device {
   }
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
+/// @cond
+#define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case command::name: return dispatch::internal::base::fnv_1a_cstr(#name);
+/// @endcond
+  /**
+   * @brief Convert a ::command to an FNV-1a hash value.
+   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
+   *            of the ::command's name. For example:
+   *            @code{.cpp}
+   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
+   *            @endcode
+   * @throw dispatch::error If the input command is ill-formed.
+   * @see ::global::to_hash
+   */
+  constexpr std::uint_least64_t to_hash(const command cmd) {
+    switch (cmd)
+    {
+    MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
+    default:
+      throw dispatch::error{ "The input command is outside the valid range of possible device commands." };
+    }
+  }
+#undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
 }
 
 }
+
 
 #endif

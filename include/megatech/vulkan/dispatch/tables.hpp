@@ -87,16 +87,22 @@ namespace global {
      *          table.
      * @param cmd The command to resolve.
      * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      */
-    constexpr const void* get(const command cmd) const noexcept {
+    constexpr const void* get(const command cmd) const {
+      if (static_cast<std::size_t>(cmd) >= m_pfns.size())
+      {
+        throw dispatch::error{ "The input command is outside the valid range of possible global commnds." };
+      }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The command to resolve.
      * @return A generic read-only pointer to the desired Vulkan command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      */
-    constexpr const void* operator()(const command cmd) const noexcept {
+    constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
 /// @cond
@@ -233,18 +239,24 @@ namespace instance {
      *          correct type.
      * @param cmd The ::command to resolve.
      * @return A generic read-only pointer to the desired Vulkan ::command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      * @see ::global::table::get(const global::command) const
      */
-    constexpr const void* get(const command cmd) const noexcept {
+    constexpr const void* get(const command cmd) const {
+      if (static_cast<std::size_t>(cmd) >= m_pfns.size())
+      {
+        throw dispatch::error{ "The input command is outside the valid range of possible instance commnds." };
+      }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The ::command to resolve.
      * @return A generic read-only pointer to the desired Vulkan ::command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      * @see ::global::table::get(const global::command) const
      */
-    constexpr const void* operator()(const command cmd) const noexcept {
+    constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
 /// @cond
@@ -391,18 +403,24 @@ namespace device {
      *          correct type.
      * @param cmd The ::command to resolve.
      * @return A generic read-only pointer to the desired Vulkan ::command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      * @see ::global::table::get(const global::command) const
      */
-    constexpr const void* get(const command cmd) const noexcept {
+    constexpr const void* get(const command cmd) const {
+      if (static_cast<std::size_t>(cmd) >= m_pfns.size())
+      {
+        throw dispatch::error{ "The input command is outside the valid range of possible device commnds." };
+      }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The ::command to resolve.
      * @return A generic read-only pointer to the desired Vulkan ::command. The pointed-to value **MAY** be null.
+     * @throw dispatch::error If the value of `cmd` isn't valid.
      * @see ::global::table::get(const global::command) const
      */
-    constexpr const void* operator()(const command cmd) const noexcept {
+    constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
 /// @cond
