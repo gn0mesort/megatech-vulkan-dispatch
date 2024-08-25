@@ -18,6 +18,7 @@ namespace megatech::vulkan::dispatch {
 namespace global {
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) G(global, nullptr, cmd);
+
   table::table(const PFN_vkGetInstanceProcAddr global) {
     if (!global)
     {
@@ -26,6 +27,7 @@ namespace global {
     MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
     m_pfns[static_cast<std::size_t>(command::vkGetInstanceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(global);
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 }
@@ -44,6 +46,7 @@ namespace instance {
     MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
     m_instance = instance;
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkInstance table::instance() const {
@@ -55,6 +58,7 @@ namespace instance {
 namespace device {
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, device, cmd);
+
   table::table(const megatech::vulkan::dispatch::global::table& global,
                const megatech::vulkan::dispatch::instance::table& instance, const VkDevice device) {
     using gcmd = megatech::vulkan::dispatch::global::command;
@@ -68,9 +72,11 @@ namespace device {
     m_instance = instance.instance();
     m_device = device;
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, instance, cmd);
+
   table::table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance) {
     using gcmd = megatech::vulkan::dispatch::global::command;
     if (!instance)
@@ -81,10 +87,12 @@ namespace device {
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = instance;
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, (instance.instance()), cmd);
+
   table::table(const megatech::vulkan::dispatch::global::table& global,
                const megatech::vulkan::dispatch::instance::table& instance) {
     using gcmd = megatech::vulkan::dispatch::global::command;
@@ -92,9 +100,11 @@ namespace device {
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = instance.instance();
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(cmd) D(cl, device, cmd);
+
   table::table(const table& base, const VkDevice device) {
     using dcmd = megatech::vulkan::dispatch::device::command;
     if (base.device())
@@ -110,6 +120,7 @@ namespace device {
     m_instance = base.m_instance;
     m_device = device;
   }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkInstance table::instance() const {

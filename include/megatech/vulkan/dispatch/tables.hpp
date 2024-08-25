@@ -7,6 +7,7 @@
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_TABLES_HPP
 #define MEGATECH_VULKAN_DISPATCH_TABLES_HPP
+
 #include <cstddef>
 #include <cinttypes>
 
@@ -35,27 +36,33 @@ namespace global {
      * @throw dispatch::error If the value of `global` is null.
      */
     explicit table(const PFN_vkGetInstanceProcAddr global);
+
     /**
      * @brief Copy a table.
      * @param other The table to copy.
      */
     table(const table& other) = default;
+
     /// @cond
     table(table&& other) = delete;
     /// @endcond
+
     /**
      * @brief Destroy a table.
      */
     ~table() noexcept = default;
+
     /**
      * @brief Copy-assign a table.
      * @param rhs The table to copy.
      * @return A reference to the copied-to table.
      */
     table& operator=(const table& rhs) = default;
+
     /// @cond
     table& operator=(table&& rhs) = delete;
     /// @endcond
+
     /**
      * @brief Retrieve the size of the table.
      * @return The number of commands held in the table.
@@ -63,6 +70,7 @@ namespace global {
     constexpr std::size_t size() const noexcept {
       return m_pfns.size();
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
@@ -96,6 +104,7 @@ namespace global {
       }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The command to resolve.
@@ -105,9 +114,11 @@ namespace global {
     constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
+
 /// @cond
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv_1a_cstr(#name): return get(command::name);
 /// @endcond
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @details Although ::get(command) const always returns a valid pointer (unless you create an invalid command
@@ -164,7 +175,9 @@ namespace global {
         return nullptr;
       }
     }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV-1a hash of the name of the ::command to retrieve.
@@ -174,7 +187,6 @@ namespace global {
     constexpr const void* operator()(const std::uint_least64_t hash) const noexcept {
       return get(hash);
     }
-
   };
 
 }
@@ -199,32 +211,39 @@ namespace instance {
      * @throw dispatch::error If the value of instance is `VK_NULL_HANDLE`.
      */
     table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
+
     /**
      * @brief Copy a table.
      * @param other The table to copy.
      */
     table(const table& other) = default;
+
     /// @cond
     table(table&& other) = delete;
     /// @endcond
+
     /**
      * @brief Destroy a table.
      */
     ~table() noexcept = default;
+
     /**
      * @brief Copy-assign n table.
      * @param rhs The table to copy.
      * @return A reference to the copied-to table.
      */
     table& operator=(const table& rhs) = default;
+
     /// @cond
     table& operator=(table&& rhs) = delete;
     /// @endcond
+
     /**
      * @brief Retrieve the ::VkInstance used to construct the table.
      * @return The ::VkInstance handle that was used to construct the table.
      */
     VkInstance instance() const;
+
     /**
      * @brief Retrieve the size of the table.
      * @return The number of commands held in the table.
@@ -232,6 +251,7 @@ namespace instance {
     constexpr std::size_t size() const noexcept {
       return m_pfns.size();
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
@@ -249,6 +269,7 @@ namespace instance {
       }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The ::command to resolve.
@@ -259,9 +280,11 @@ namespace instance {
     constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
+
 /// @cond
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv_1a_cstr(#name): return get(command::name);
 /// @endcond
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV-1a hash of the name of the ::command to retrieve.
@@ -276,7 +299,9 @@ namespace instance {
         return nullptr;
       }
     }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV-1a hash of the name of the ::command to retrieve.
@@ -314,6 +339,7 @@ namespace device {
      */
     table(const megatech::vulkan::dispatch::global::table& global,
           const megatech::vulkan::dispatch::instance::table& instance, const VkDevice device);
+
     /**
      * @brief Construct a table from a ::VkInstance handle.
      * @details Generally, you should prefer to construct device dispatch tables on a per device basis. Properly
@@ -337,6 +363,7 @@ namespace device {
      * @throw dispatch::error If the value of `instance` is null.
      */
     table(const megatech::vulkan::dispatch::global::table& global, const VkInstance instance);
+
     /**
      * @brief Construct a table from an instance-level table.
      * @param global A reference to a global::table.
@@ -357,38 +384,46 @@ namespace device {
      * @throw dispatch::error If the base table already has a ::VkDevice loaded or if `device` is null.
      */
     table(const table& base, const VkDevice device);
+
     /**
      * @brief Copy a table.
      * @param other The table to copy.
      */
     table(const table& other) = default;
+
     /// @cond
     table(table&& other) = delete;
     /// @endcond
+
     /**
      * @brief Destroy a table.
      */
     ~table() noexcept = default;
+
     /**
      * @brief Copy-assign a table.
      * @param rhs The table to copy.
      * @return A reference to the copied-to table.
      */
     table& operator=(const table& rhs) = default;
+
     /// @cond
     table& operator=(table&& rhs) = delete;
     /// @endcond
+
     /**
      * @brief Retrieve the ::VkInstance used to construct the table.
      * @return The ::VkInstance handle that was used to construct the table.
      */
     VkInstance instance() const;
+
     /**
      * @brief Retrieve the ::VkDevice used to construct the table.
      * @return The ::VkDevice handle that was used to construct the table if any. Null is returned in all other
      *         cases.
      */
     VkDevice device() const;
+
     /**
      * @brief Retrieve the size of the table.
      * @return The number of commands held in the table.
@@ -396,6 +431,7 @@ namespace device {
     constexpr std::size_t size() const noexcept {
       return m_pfns.size();
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @details Dispatch tables make no attempt to validate the function pointers they retrieve. Clients are
@@ -413,6 +449,7 @@ namespace device {
       }
       return &m_pfns[static_cast<std::size_t>(cmd)];
     }
+
     /**
      * @brief Retrieve a pointer to a function pointer in the table.
      * @param cmd The ::command to resolve.
@@ -423,9 +460,11 @@ namespace device {
     constexpr const void* operator()(const command cmd) const {
       return get(cmd);
     }
+
 /// @cond
 #define MEGATECH_VULKAN_DISPATCH_COMMAND(name) case dispatch::internal::base::fnv_1a_cstr(#name): return get(command::name);
 /// @endcond
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV-1a hash of the name of the command to retrieve.
@@ -440,7 +479,9 @@ namespace device {
         return nullptr;
       }
     }
+
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
+
     /**
      * @brief Retrieve a pointer to a function in the table.
      * @param hash An FNV-1a hash of the name of the ::command to retrieve.

@@ -30,6 +30,7 @@ try:
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_DEFS_INL
 #define MEGATECH_VULKAN_DISPATCH_DEFS_INL
+
 #include <cstddef>
 
 /**
@@ -38,7 +39,8 @@ try:
  * @details All times are UTC.
  */
 #define MEGATECH_VULKAN_DISPATCH_BUILD_DATE (${f"{buildtime.year}{buildtime.month:02}{buildtime.day:02}"}ULL)
-/**
+
+  /**
  * @def MEGATECH_VULKAN_DISPATCH_BUILD_TIME
  * @brief The time at which this file was generated in the format HHMMSS.
  * @details All times are UTC.
@@ -64,6 +66,7 @@ try:
 % endif
 % endfor
 % endif
+
 /**
  * @def MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE
  * @brief Define a dispatchable Vulkan handle type.
@@ -100,6 +103,7 @@ try:
 #ifndef MEGATECH_VULKAN_DISPATCH_API_CALL
   #define MEGATECH_VULKAN_DISPATCH_API_CALL MEGATECH_VULKAN_DISPATCH_API_CALL_PRIV
 #endif
+
 /**
  * @def MEGATECH_VULKAN_DISPATCH_API_ATTR
  * @brief The function attribute used for the Vulkan API.
@@ -108,6 +112,7 @@ try:
 #ifndef MEGATECH_VULKAN_DISPATCH_API_ATTR
   #define MEGATECH_VULKAN_DISPATCH_API_ATTR MEGATECH_VULKAN_DISPATCH_API_ATTR_PRIV
 #endif
+
 /**
  * @def MEGATECH_VULKAN_DISPATCH_API_PTR
  * @brief The function pointer attribute used for the Vulkan API.
@@ -148,23 +153,27 @@ extern "C" {
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkInstance.html
  */
 MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(VkInstance);
+
 /**
  * @typedef VkDevice
  * @brief A type equivalent to the VkDevice handle as defined by Vulkan.
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/VkDevice.html
  */
 MEGATECH_VULKAN_DISPATCH_DEFINE_HANDLE(VkDevice);
+
 /**
  * @brief A generic Vulkan function pointer.
  * @details Values of this type **MUST** be reinterpreted to the correct function pointer type before being called.
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/PFN_vkVoidFunction.html
  */
 typedef void (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkVoidFunction)(void);
+
 /**
  * @brief A pointer to a Vulkan instance-level loader function.
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetInstanceProcAddr.html
  */
 typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetInstanceProcAddr)(VkInstance, const char*);
+
 /**
  * @brief A pointer to a Vulkan device-level loader function.
  * @see https://registry.khronos.org/vulkan/specs/1.3-extensions/man/html/vkGetDeviceProcAddr.html
@@ -174,6 +183,7 @@ typedef PFN_vkVoidFunction (MEGATECH_VULKAN_DISPATCH_API_PTR *PFN_vkGetDevicePro
 }
 
 namespace megatech::vulkan::dispatch {
+
   /**
    * @brief Retrieve the version of the Vulkan specification that was used to generate this library.
    * @details In general, this **SHOULD** be less than or equal to the patch version of the value returned by

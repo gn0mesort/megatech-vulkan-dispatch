@@ -9,6 +9,7 @@
 #define MEGATECH_VULKAN_DISPATCH_HPP
 
 #include "dispatch/defs.hpp"
+#include "dispatch/error.hpp"
 #include "dispatch/commands.hpp"
 #include "dispatch/tables.hpp"
 
