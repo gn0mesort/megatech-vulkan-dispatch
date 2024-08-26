@@ -59,7 +59,7 @@ extern "C" VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInst
 
 // This is all identical to the library definition **EXCEPT** it can be computed at runtime.
 template <std::unsigned_integral Type, Type Offset, Type Prime, Type MaxDigits = std::numeric_limits<Type>::digits>
-inline Type basic_fnv1a_cstr(const char* str) {
+inline Type basic_fnv_1a_cstr(const char* str) {
   static_assert(MaxDigits <= std::numeric_limits<Type>::digits, "The maximum number of radix digits in an FNV-1a hash "
                 "cannot exceed the the width of its data type.");
   auto hash = static_cast<Type>(Offset);
@@ -77,13 +77,13 @@ inline Type basic_fnv1a_cstr(const char* str) {
   return hash;
 }
 
-inline std::uint_least64_t fnv1a_cstr(const char* str) {
-  return basic_fnv1a_cstr<std::uint_least64_t, 0xcbf29ce484222325, 0x100000001b3, 64>(str);
+inline std::uint_least64_t fnv_1a_cstr(const char* str) {
+  return basic_fnv_1a_cstr<std::uint_least64_t, 0xcbf29ce484222325, 0x100000001b3, 64>(str);
 }
 
 template <typename DispatchTable>
 const void* get_pfn_by_name(DispatchTable&& dt, const char* name) {
-  const auto hash = fnv1a_cstr(name);
+  const auto hash = fnv_1a_cstr(name);
   const auto ppfn = dt.get(hash);
   if (!ppfn)
   {

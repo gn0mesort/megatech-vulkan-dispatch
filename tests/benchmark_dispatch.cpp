@@ -1,3 +1,5 @@
+#include <random>
+
 #include "common.hpp"
 
 // FAIL(...) is very expensive in benchmarks and not representative of what real client programs would do so I'm
@@ -41,13 +43,13 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
     return pfn;
   };
   BENCHMARK("Global Preload with Run-Time Hash") {
-    const auto ppfn = gdt.get(fnv1a_cstr("vkEnumerateInstanceLayerProperties"));
+    const auto ppfn = gdt.get(fnv_1a_cstr("vkEnumerateInstanceLayerProperties"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkEnumerateInstanceLayerProperties*>(ppfn);
     CHECK_PFN(pfn);
     return pfn;
   };
-  auto hash = fnv1a_cstr("vkEnumerateInstanceLayerProperties");
+  auto hash = fnv_1a_cstr("vkEnumerateInstanceLayerProperties");
   BENCHMARK("Global Preload with Stored Run-Time Hash") {
     const auto ppfn = gdt.get(hash);
     CHECK_PPFN(ppfn);
@@ -87,13 +89,13 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
     return pfn;
   };
   BENCHMARK("Instance Preload with Run-Time Hash") {
-    const auto ppfn = idt.get(fnv1a_cstr("vkDestroyInstance"));
+    const auto ppfn = idt.get(fnv_1a_cstr("vkDestroyInstance"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkDestroyInstance*>(ppfn);
     CHECK_PFN(pfn);
     return pfn;
   };
-  hash = fnv1a_cstr("vkDestroyInstance");
+  hash = fnv_1a_cstr("vkDestroyInstance");
   BENCHMARK("Instance Preload with Stored Run-Time Hash") {
     const auto ppfn = idt.get(hash);
     CHECK_PPFN(ppfn);
@@ -137,13 +139,13 @@ TEST_CASE("Bare Vulkan Loader Functions Vs megatech::vulkan::dispatch Tables", "
     return pfn;
   };
   BENCHMARK("Device Preload with Run-Time Hash") {
-    const auto ppfn = ddt.get(fnv1a_cstr("vkDestroyDevice"));
+    const auto ppfn = ddt.get(fnv_1a_cstr("vkDestroyDevice"));
     CHECK_PPFN(ppfn);
     const auto pfn = *reinterpret_cast<const PFN_vkDestroyDevice*>(ppfn);
     CHECK_PFN(pfn);
     return pfn;
   };
-  hash = fnv1a_cstr("vkDestroyDevice");
+  hash = fnv_1a_cstr("vkDestroyDevice");
   BENCHMARK("Device Preload with Stored Run-Time Hash") {
     const auto ppfn = ddt.get(hash);
     CHECK_PPFN(ppfn);
