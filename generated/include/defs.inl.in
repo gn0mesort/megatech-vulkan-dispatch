@@ -128,21 +128,21 @@ try:
   MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.global_commands()) - 1 else ""}
 % endfor
 
-#define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_COUNT (${len(commands.global_commands())})
+#define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_COUNT (${len(commands.global_commands())}ULL)
 
 #define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST ${"\\"}
 % for i, cmd in enumerate(sorted(commands.instance_commands())):
   MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.instance_commands()) - 1 else "" }
 % endfor
 
-#define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_COUNT (${len(commands.instance_commands())})
+#define MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_COUNT (${len(commands.instance_commands())}ULL)
 
 #define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST ${"\\"}
 % for i, cmd in enumerate(sorted(commands.device_commands())):
   MEGATECH_VULKAN_DISPATCH_COMMAND(${cmd.name()}) ${"\\" if i < len(commands.device_commands()) - 1 else ""}
 % endfor
 
-#define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_COUNT (${len(commands.device_commands())})
+#define MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_COUNT (${len(commands.device_commands())}ULL)
 /// @endcond
 
 extern "C" {
