@@ -131,7 +131,8 @@ For a testing, you should instead use:
 meson configure build -Dbuildtype=debug -Dtests=enabled -Dbenchmarks=enabled -Dextra_defines=enabled
 ```
 
-For benchmarking, you may want to change `-Dbuildtype=debug` to `-Dbuildtype=debugoptimized`.
+For benchmarking, you should change `-Dbuildtype=debug` to `-Dbuildtype=release`. If you don't, your compiler may not
+resolve constant expressions.
 
 ### Compiling
 
