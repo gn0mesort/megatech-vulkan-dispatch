@@ -17,7 +17,7 @@ namespace megatech::vulkan::dispatch::internal::base {
 
   /**
    * @brief A generic compile-time FNV-1a hash function.
-   * @tparam Type The storage type of the hash function. This **MAY** be much larger than the desired hash width but it
+   * @tparam Type The storage type of the hash function. This **MAY** be much wider than the desired hash width but it
    *              **MUST NOT** be shorter. For example, `std::uint64_t` is acceptable for 32-bit and 64-bit
    *              FNV-1a fuctions. However, `std::uint32_t` is only acceptable for the 32-bit FNV-1a function.
    * @tparam Offset The FNV offset basis. This **SHOULD** be the matching offset basis for the desired function. If

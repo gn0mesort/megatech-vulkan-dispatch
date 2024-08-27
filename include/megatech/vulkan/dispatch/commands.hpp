@@ -38,23 +38,22 @@ namespace global {
 /// @endcond
 
   /**
-   * @brief Convert an FNV-1a hash value into a Vulkan ::command.
+   * @brief Convert a 64-bit FNV-1a hash value into a Vulkan ::command.
    * @details This function is equivalent, largely to the ::table::get(const std::uint_least64_t) const method.
    *          The primary exception is that this function can throw a dispatch::error.
    *
-   *          The primary utility of this function is to store ::command values for hashes computed at run-time.
-   *          Generally, storing a @ref command and retrieving the corresponding function pointer is much faster than
+   *          The main use of this function is to store ::command values for hashes computed at run-time.
+   *          Generally, storing a ::command and retrieving the corresponding function pointer is much faster than
    *          computing hash values multiple times from strings.
    *
    *          In a pinch, you could also use this to pre-resolve all of your hash values to ::command values at
    *          run-time. This would allow you to skip checking for null returns on
    *          ::table::get(const std::uint_least64_t) const.
-   * @param hash An FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the string
-   *             value of the ::command's name. For example:
+   * @param hash A 64-bit FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the
+   *             string value of the ::command's name. For example:
    *             @code{.cpp}
-   *               to_command(fnv_1a("vkGetInstanceProcAddr")); // == command::vkGetInstanceProcAddr
+   *               to_command(fnv_1a_64("vkGetInstanceProcAddr")); // == command::vkGetInstanceProcAddr
    *             @endcode
-   *
    * @throws dispatch::error If the input hash doesn't have a compile-time mapping.
    */
   constexpr command to_command(const std::uint_least64_t hash) {
@@ -73,14 +72,14 @@ namespace global {
 /// @endcond
 
   /**
-   * @brief Convert a ::command to an FNV-1a hash value.
+   * @brief Convert a ::command to a 64-bit FNV-1a hash value.
    * @details This function is the inverse of ::to_command(const std::uint_least64_t). At run-time this is a simple
    *          mapping from ::command values to hashes. The hash values are not actually recomputed. If you pass an
    *          ill-formed command value this function will generate a run-time error.
-   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
-   *            of the ::command's name. For example:
+   * @param cmd A ::command that maps to a known 64-bit FNV-1a hash value. Hash values are mapped based on the string
+   *            value of the ::command's name. For example:
    *            @code{.cpp}
-   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
+   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a_64("vkGetInstanceProcAddr")
    *            @endcode
    * @throw dispatch::error If the input command is ill-formed.
    */
@@ -117,8 +116,8 @@ namespace instance {
 /// @endcond
 
   /**
-   * @brief Convert an FNV-1a hash value into a Vulkan ::command.
-   * @param hash An FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the string
+   * @brief Convert a 64-bit FNV-1a hash value into a Vulkan ::command.
+   * @param hash A 64-bit FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the string
    *             value of the ::command's name.
    * @throws dispatch::error If the input hash doesn't have a compile-time mapping.
    * @see ::global::to_command
@@ -139,12 +138,9 @@ namespace instance {
 /// @endcond
 
   /**
-   * @brief Convert a ::command to an FNV-1a hash value.
-   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
-   *            of the ::command's name. For example:
-   *            @code{.cpp}
-   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
-   *            @endcode
+   * @brief Convert a ::command to a 64-bit FNV-1a hash value.
+   * @param cmd A ::command that maps to a known 64-bit FNV-1a hash value. Hash values are mapped based on the string
+   *            value of the ::command's name.
    * @throw dispatch::error If the input command is ill-formed.
    * @see ::global::to_hash
    */
@@ -181,8 +177,8 @@ namespace device {
 /// @endcond
 
   /**
-   * @brief Convert an FNV-1a hash value into a Vulkan ::command.
-   * @param hash An FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the string
+   * @brief Convert a 64-bit FNV-1a hash value into a Vulkan ::command.
+   * @param hash A 64-bit FNV-1a hash value that maps to a Vulkan ::command. Hash values are mapped based on the string
    *             value of the ::command's name.
    * @throws dispatch::error If the input hash doesn't have a compile-time mapping.
    * @see ::global::to_command
@@ -203,12 +199,9 @@ namespace device {
 /// @endcond
 
   /**
-   * @brief Convert a ::command to an FNV-1a hash value.
-   * @param cmd A ::command that maps to a known FNV-1a hash value. Hash values are mapped based on the string value
-   *            of the ::command's name. For example:
-   *            @code{.cpp}
-   *              to_hash(command::vkGetInstanceProcAddr); // == fnv_1a("vkGetInstanceProcAddr")
-   *            @endcode
+   * @brief Convert a ::command to a 64-bit FNV-1a hash value.
+   * @param cmd A ::command that maps to a known 64-bit  FNV-1a hash value. Hash values are mapped based on the string
+   *            value of the ::command's name. For example:
    * @throw dispatch::error If the input command is ill-formed.
    * @see ::global::to_hash
    */
