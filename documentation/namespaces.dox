@@ -1,0 +1,34 @@
+/**
+ * @namespace megatech
+ * @brief Megatech Classes and Utilities
+ */
+/**
+ * @namespace megatech::vulkan
+ * @brief Vulkan Classes and Utilities
+ */
+/**
+ * @namespace megatech::vulkan::dispatch
+ * @brief Vulkan Dispatch Table Classes and Utilities
+ */
+/**
+ * @namespace megatech::vulkan::dispatch::global
+ * @brief Global Vulkan Dispatch Functionality
+ */
+/**
+ * @namespace megatech::vulkan::dispatch::instance
+ * @brief Instance-Level Vulkan Dispatch Functionality
+ */
+/**
+ * @namespace megatech::vulkan::dispatch::device
+ * @brief Device-Level Vulkan Dispatch Functionality
+ */
+/// @cond INTERNAL
+/**
+ * @namespace megatech::vulkan::dispatch::internal
+ * @brief Internal Functionality
+ */
+/**
+ * @namespace megatech::vulkan::dispatch::internal::base
+ * @brief Cross-Platform Internal Functionality
+ */
+/// @endcond

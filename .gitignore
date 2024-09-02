@@ -30,3 +30,15 @@
 *.exe
 *.out
 *.app
+
+# Meson
+build/
+
+# Clangd
+.cache
+
+# Python
+.venv/
+__pycache__
+*.egg-info
+.coverage
