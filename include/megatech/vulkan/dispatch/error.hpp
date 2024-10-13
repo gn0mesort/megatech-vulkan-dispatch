@@ -11,6 +11,8 @@
 #include <string>
 #include <exception>
 
+#include "defs.hpp"
+
 namespace megatech::vulkan::dispatch {
 
   /**
