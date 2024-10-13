@@ -7,6 +7,8 @@
  */
 #include "megatech/vulkan/dispatch/tables.hpp"
 
+#include <megatech/assertions.hpp>
+
 #include "megatech/vulkan/dispatch/error.hpp"
 
 #define G(cl, ctx, cmd) (m_pfns[static_cast<std::size_t>(megatech::vulkan::dispatch::global::command::cmd)] = (cl)((ctx), (#cmd)))
@@ -25,7 +27,10 @@ namespace global {
       throw dispatch::error{ "The global loader command, \"vkGetInstanceProcAddr\", cannot be null." };
     }
     MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST
-    m_pfns[static_cast<std::size_t>(command::vkGetInstanceProcAddr)] = reinterpret_cast<PFN_vkVoidFunction>(global);
+    constexpr auto gipa = static_cast<std::size_t>(command::vkGetInstanceProcAddr);
+    m_pfns[gipa] = reinterpret_cast<PFN_vkVoidFunction>(global);
+    MEGATECH_POSTCONDITION(m_pfns[gipa] != nullptr);
+    MEGATECH_POSTCONDITION(m_pfns[gipa] == reinterpret_cast<PFN_vkVoidFunction>(global));
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -45,11 +50,13 @@ namespace instance {
     const auto cl = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     MEGATECH_VULKAN_DISPATCH_INSTANCE_COMMAND_LIST
     m_instance = instance;
+    MEGATECH_POSTCONDITION(m_instance != nullptr);
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkInstance table::instance() const {
+    MEGATECH_PRECONDITION(m_instance != nullptr);
     return m_instance;
   }
 
@@ -71,6 +78,8 @@ namespace device {
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = instance.instance();
     m_device = device;
+    MEGATECH_POSTCONDITION(m_instance != nullptr);
+    MEGATECH_POSTCONDITION(m_device != nullptr);
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -86,6 +95,8 @@ namespace device {
     const auto cl = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = instance;
+    MEGATECH_POSTCONDITION(m_instance != nullptr);
+    MEGATECH_POSTCONDITION(m_device == nullptr);
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -99,6 +110,8 @@ namespace device {
     const auto cl = *reinterpret_cast<const PFN_vkGetInstanceProcAddr*>(global.get(gcmd::vkGetInstanceProcAddr));
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = instance.instance();
+    MEGATECH_POSTCONDITION(m_instance != nullptr);
+    MEGATECH_POSTCONDITION(m_device == nullptr);
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
@@ -119,15 +132,19 @@ namespace device {
     MEGATECH_VULKAN_DISPATCH_DEVICE_COMMAND_LIST
     m_instance = base.m_instance;
     m_device = device;
+    MEGATECH_POSTCONDITION(m_instance != nullptr);
+    MEGATECH_POSTCONDITION(m_device != nullptr);
   }
 
 #undef MEGATECH_VULKAN_DISPATCH_COMMAND
 
   VkInstance table::instance() const {
+    MEGATECH_PRECONDITION(m_instance != nullptr);
     return m_instance;
   }
 
   VkDevice table::device() const {
+    MEGATECH_PRECONDITION(m_instance != nullptr);
     return m_device;
   }
 

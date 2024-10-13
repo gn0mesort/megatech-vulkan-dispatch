@@ -8,6 +8,7 @@
  */
 #ifndef MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV_1A_HPP
 #define MEGATECH_VULKAN_DISPATCH_INTERNAL_BASE_FNV_1A_HPP
+
 #include <cinttypes>
 
 #include <concepts>
