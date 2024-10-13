@@ -33,13 +33,16 @@ The purpose of this library is to provide a dispatch solution for Vulkan applica
 The Megatech-Vulkan Dispatch library has minimal dependencies. To build the library you will need the following:
 
 - A standard C++20 compiler (e.g., a recent version of GCC or Clang) and run-time environment.
+- The [Megatech Assertions](https://github.com/gn0mesort/megatech-assertions) library.
 - A working Python 3 environment with `pip`.
 - The [Megatech-Vulkan Dispatch library tools](https://github.com/gn0mesort/megatech-vulkan-dispatch-tools) Python
   package
 - A working implementation of the [Meson](https://mesonbuild.com/) build system and a compatible build backend (e.g.,
   [Ninja](https://ninja-build.org/))
 
-At run-time the library only requires a standard C++20 run-time environment.
+At run-time the library only requires a standard C++20 run-time environment. Normally, the Megatech Assertions library
+will be built in to the compiled library as needed (i.e., if you are using a debug build). However, if you chose to
+build Megatech Assertions as a shared library, you will need that as well.
 
 To build the library's tests and benchmarks, this repository also requires:
 

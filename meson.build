@@ -1,7 +1,7 @@
 project(
   'megatech-vulkan-dispatch',
   [ 'cpp' ],
-  version: '1.0.0',
+  version: '1.0.1',
   license: 'AGPL-3.0-or-later',
   license_files: [ 'LICENSE' ],
   default_options: [
@@ -23,6 +23,13 @@ import megatech.vulkan.applications
 if has_tools.returncode() != 0
   error('Please ensure that all Python requirements are installed.')
 endif
+megatech_assertions_dep = dependency('megatech-assertions',
+                                     fallback: [ 'megatech-assertions', 'megatech_assertions_dep' ],
+                                     version: [ '>=1.0.0', '<2.0.0' ])
+if get_option('buildtype') == 'release'
+  megatech_assertions_dep = megatech_assertions_dep.partial_dependency(includes: true)
+endif
+dependencies = [ megatech_assertions_dep ]
 includes = include_directories('include')
 headers = [ ]
 extensions = ','.join(get_option('extensions'))
@@ -46,7 +53,8 @@ subdir('generated/include')
 sources = [
   files('src/megatech/vulkan/dispatch/error.cpp', 'src/megatech/vulkan/dispatch/tables.cpp')
 ]
-lib = library(meson.project_name(), headers + sources, version: version, include_directories: includes, install: true)
+lib = library(meson.project_name(), headers + sources, version: version, dependencies: dependencies,
+              include_directories: includes, install: true)
 megatech_vulkan_dispatch_dep = declare_dependency(link_with: lib, sources: headers, include_directories: includes)
 install_headers(files('include/megatech/vulkan/dispatch.hpp'), install_dir: 'include/megatech/vulkan')
 install_headers(files('include/megatech/vulkan/dispatch/defs.hpp', 'include/megatech/vulkan/dispatch/commands.hpp',
