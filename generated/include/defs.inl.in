@@ -122,6 +122,12 @@ try:
   #define MEGATECH_VULKAN_DISPATCH_API_PTR MEGATECH_VULKAN_DISPATCH_API_PTR_PRIV
 #endif
 
+/**
+ * @def MEGATECH_VULKAN_DISPATCH_AVAILABLE
+ * @brief This macro indicates that the Megatech-Vulkan Dispatch library is available to client programs.
+ */
+#define MEGATECH_VULKAN_DISPATCH_AVAILABLE (1)
+
 /// @cond
 #define MEGATECH_VULKAN_DISPATCH_GLOBAL_COMMAND_LIST ${"\\"}
 % for i, cmd in enumerate(sorted(commands.global_commands())):
