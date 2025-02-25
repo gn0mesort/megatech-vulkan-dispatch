@@ -2,7 +2,7 @@ project(
   'megatech-vulkan-dispatch',
   [ 'cpp' ],
   meson_version: '>=1.4.0',
-  version: '1.1.3',
+  version: '1.1.4',
   license: 'AGPL-3.0-or-later',
   license_files: [ 'LICENSE' ],
   default_options: [
